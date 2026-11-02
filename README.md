@@ -1,6 +1,6 @@
-# Travel English (B1 → B2)
+# Wanderwords: English journeys (B1 → B2)
 
-A static web app for 50-minute private lessons on the travel topic, built from the materials in `Data/Eden's_Files`.
+A travel-themed static web app for 50-minute private lessons, built from the materials in `Data/Eden's_Files`.
 
 - **Teacher** (password): 50-minute plan with a phase timer, words, questions, phrases, notes and a "lesson done" tick.
 - **Student:** warm-up pictures, new words (guess, then tap for the meaning), a matching quiz with a score, conversation questions, useful phrases, tasks and spaced-repetition flashcards.
