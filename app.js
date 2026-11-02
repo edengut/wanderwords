@@ -36,8 +36,6 @@ function route() {
   if (role === "cards") return renderAllCards();
   renderHome();
 }
-window.addEventListener("hashchange", route);
-route();
 
 function renderHome() {
   $app.innerHTML = `
@@ -339,3 +337,7 @@ function flashcards(root, words) {
   };
   draw();
 }
+
+// Start last, so every const above is defined before the first render.
+window.addEventListener("hashchange", route);
+route();
