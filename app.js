@@ -5,7 +5,7 @@
 //   #/cards            all-words flashcards
 
 // Not real security on a static site: it only keeps the student out of the teacher view.
-const TEACHER_PASS = "a2luZXRz"; // btoa of the password
+const TEACHER_PASS = "a2luZXRz"; // btoa of the lowercase password (login ignores case)
 
 const $app = document.getElementById("app");
 const $who = document.getElementById("who");
@@ -28,6 +28,7 @@ function route() {
   const teacher = sessionStorage.getItem("travel-teacher") === "1";
   $who.textContent = role === "teacher" ? "CREW" : role ? "PASSENGER" : "BOARDING";
   window.scrollTo(0, 0);
+  document.body.className = (a && ["teacher", "student"].includes(role) && lesson(a)?.theme) || "";
   if (role === "teacher") {
     if (!teacher) return renderLogin();
     return a ? renderTeacherLesson(lesson(a)) : renderList("teacher");
@@ -75,7 +76,7 @@ function renderLogin() {
   const form = $app.querySelector("form");
   form.onsubmit = (e) => {
     e.preventDefault();
-    if (btoa(form.querySelector("input").value.trim()) === TEACHER_PASS) {
+    if (btoa(form.querySelector("input").value.trim().toLowerCase()) === TEACHER_PASS) {
       sessionStorage.setItem("travel-teacher", "1");
       route();
     } else form.querySelector(".err").textContent = "Access denied: wrong password";
@@ -108,7 +109,7 @@ function navLinks(role, l) {
 const warmupHtml = (l) => `<div class="postcards">${l.warmup.map((p, i) => `
   <figure class="postcard p${i}"><div class="pc-img">${p.icon}</div>
     <figcaption><span class="pc-hand">Greetings from…</span>${esc(p.caption)}</figcaption>
-    <div class="pc-stamp">${i ? "🐚" : "🏛️"}</div></figure>`).join("")}</div>`;
+    <div class="pc-stamp">${p.stamp || (i ? "🐚" : "🏛️")}</div></figure>`).join("")}</div>`;
 
 // A numbered stop on the lesson's route.
 const gate = (n, title, sub, body) => `<section class="gate">
@@ -133,16 +134,13 @@ const questionsHtml = (l) => (qn = 0, l.questions.map((s) => `
 
 const phrasesHtml = (l) => `<div class="phrases">${l.phrases.map((p) => `<div class="phrase">💬 ${esc(p)}</div>`).join("")}</div>`;
 
-// Matching quiz: one select per word, options = that group's meanings, shuffled.
-function quiz(root, l) {
+// Select quiz. sections: [{name, items: [[label, answer, options]]}]. key: where the best score is saved.
+function quiz(root, sections, key) {
   let n = 0;
   root.innerHTML = `<div class="quiz passport">
-    ${l.groups.map((g) => {
-      const opts = shuffle(g.words.map(([, m]) => m));
-      return `<h3 class="group">${esc(g.name)}</h3>` + g.words.map(([w, m]) => `
+    ${sections.map((g) => (g.name ? `<h3 class="group">${esc(g.name)}</h3>` : "") + g.items.map(([w, m, opts]) => `
         <div class="q" data-ans="${esc(m)}"><span>${++n}. <b>${esc(w)}</b></span>
-          <select><option value="">— choose —</option>${opts.map((o) => `<option>${esc(o)}</option>`).join("")}</select><i class="stamp"></i></div>`).join("");
-    }).join("")}
+          <select aria-label="Answer ${n}"><option value="">— choose —</option>${opts.map((o) => `<option>${esc(o)}</option>`).join("")}</select><i class="stamp"></i></div>`).join("")).join("")}
     <div class="row" style="margin-top:12px"><button data-act="check">🛂 Stamp my passport</button><button class="ghost" data-act="retry">Try again</button><span class="score"></span></div>
   </div>`;
   root.querySelector('[data-act="check"]').onclick = () => {
@@ -155,11 +153,24 @@ function quiz(root, l) {
     });
     root.querySelector(".score").textContent = `${right} / ${n} ${right === n ? "🏆 Perfect flight!" : right >= n * 0.7 ? "✈️ Nice landing!" : "🧭 Keep exploring"}`;
     const best = store.get("quiz", {});
-    best[l.n] = Math.max(best[l.n] || 0, right);
+    best[key] = Math.max(best[key] || 0, right);
     store.set("quiz", best);
   };
-  root.querySelector('[data-act="retry"]').onclick = () => quiz(root, l);
+  root.querySelector('[data-act="retry"]').onclick = () => quiz(root, sections, key);
 }
+
+// Matching: options = that group's meanings, shuffled.
+const matchSections = (l) => l.groups.map((g) => {
+  const opts = shuffle(g.words.map(([, m]) => m));
+  return { name: g.name, items: g.words.map(([w, m]) => [w, m, opts]) };
+});
+const drillSections = (l) => [{ items: l.drill.map(([q, opts, a]) => [q, a, shuffle(opts)]) }];
+
+const rulesHtml = (l) => `<div class="rules">${l.rules.map((r) => `
+  <div class="rule"><h3>${esc(r.title)}</h3><div class="form">${esc(r.form)}</div><p>${esc(r.use)}</p>
+    <ul>${r.ex.map((e) => `<li>${esc(e)}</li>`).join("")}</ul></div>`).join("")}</div>`;
+
+const drillKeyHtml = (l) => `<ol class="box">${l.drill.map(([q, , a]) => `<li>${esc(q)} → <b>${esc(a)}</b></li>`).join("")}</ol>`;
 
 // ---------- Teacher ----------
 
@@ -171,7 +182,7 @@ function renderTeacherLesson(l) {
   $app.innerHTML = `
     <p class="kicker">Flight WW-${String(l.n).padStart(3, "0")} · Crew briefing</p>
     <h1 class="page">${esc(l.title)}</h1>
-    <div class="box"><b>Mission:</b> ${esc(l.goal)}${best !== undefined ? `<br><b>Best quiz score on this device:</b> ${best} / ${wordsOf(l).length}` : ""}</div>
+    <div class="box"><b>Mission:</b> ${esc(l.goal)}${best !== undefined ? `<br><b>Best matching score on this device:</b> ${best} / ${wordsOf(l).length}` : ""}</div>
     <div class="timer">
       <div class="clock">50:00</div>
       <div class="now"><div class="pname">Ready for take-off</div>
@@ -188,6 +199,8 @@ function renderTeacherLesson(l) {
         <div class="stu">🎒 Student sees: ${p.student.map(esc).join(" · ")}</div>
       </div>`).join("")}
     <h2>Warm-up postcards</h2>${warmupHtml(l)}
+    ${l.rules ? `<h2>Grammar</h2>${rulesHtml(l)}` : ""}
+    ${l.drill ? `<h2>Gap-fill answers</h2>${drillKeyHtml(l)}` : ""}
     <h2>Words (${wordsOf(l).length})</h2>${vocabHtml(l, false)}
     <h2>Questions</h2>${questionsHtml(l)}
     <h2>Useful phrases</h2>${phrasesHtml(l)}
@@ -275,6 +288,16 @@ function renderStudentLesson(l) {
   if (!l) return renderList("student");
   const ticks = store.get("ticks", {});
   const tasks = l.phases.flatMap((p) => p.student);
+  const g = (k, t, sub) => l.gates?.[k] || [t, sub];
+  const gates = [
+    [...g("warmup", "Where would you rather be?", "Look at the two postcards. Choose one and say why."), warmupHtml(l)],
+    l.rules && ["Grammar check-in", "Read each card and the examples. Notice when we use each form.", rulesHtml(l)],
+    [...g("words", "Pack your words", "Read the example on each luggage tag, guess the meaning, then tap the tag to check."), vocabHtml(l, true)],
+    l.drill && ["Fill the gaps", "Choose the right form for each sentence. Every right answer gets a stamp.", '<div id="drill"></div>'],
+    [...g("quiz", "Passport control", "Match each word to its meaning. Every right answer gets a stamp."), '<div id="quiz"></div>'],
+    [...g("speak", "Tell me about a trip", "Answer out loud. Use at least 5 new words and talk for 30–60 seconds."), questionsHtml(l)],
+    ["Souvenir phrases", "Take these home and use them when you speak.", phrasesHtml(l)],
+  ].filter(Boolean);
   $app.innerHTML = `
     <section class="ticket">
       <div class="ticket-main">
@@ -283,13 +306,9 @@ function renderStudentLesson(l) {
         <div class="ticket-route"><div><small>FROM</small><b>B1</b></div><div class="pass-line">✈</div><div><small>TO</small><b>B2</b></div></div>
         <p>🎯 ${esc(l.goal)}</p>
       </div>
-      <div class="ticket-stub"><div><small>DURATION</small><b>50 min</b></div><div><small>GATES</small><b>5</b></div><div><small>WORDS</small><b>${wordsOf(l).length}</b></div></div>
+      <div class="ticket-stub"><div><small>DURATION</small><b>50 min</b></div><div><small>GATES</small><b>${gates.length}</b></div><div><small>WORDS</small><b>${wordsOf(l).length}</b></div></div>
     </section>
-    ${gate(1, "Where would you rather be?", "Look at the two postcards. Choose one and say why.", warmupHtml(l))}
-    ${gate(2, "Pack your words", "Read the example on each luggage tag, guess the meaning, then tap the tag to check.", vocabHtml(l, true))}
-    ${gate(3, "Passport control", "Match each word to its meaning. Every right answer gets a stamp.", '<div id="quiz"></div>')}
-    ${gate(4, "Tell me about a trip", "Answer out loud. Use at least 5 new words and talk for 30–60 seconds.", questionsHtml(l))}
-    ${gate(5, "Souvenir phrases", "Take these home and use them when you speak.", phrasesHtml(l))}
+    ${gates.map(([t, sub, body], i) => gate(i + 1, t, sub, body)).join("")}
     <h2>✅ Check-in list</h2>
     <div class="box">
       ${tasks.map((s, i) => {
@@ -312,7 +331,8 @@ function renderStudentLesson(l) {
     store.set("ticks", all);
     cb.closest(".task").classList.toggle("checked", cb.checked);
   }));
-  quiz($app.querySelector("#quiz"), l);
+  quiz($app.querySelector("#quiz"), matchSections(l), l.n);
+  if (l.drill) quiz($app.querySelector("#drill"), drillSections(l), `${l.n}-drill`);
   const review = LESSONS.filter((x) => x.n < l.n).flatMap(cardsFor).filter((x) => studied(x) && isDue(x)).slice(0, 10);
   flashcards($app.querySelector("#cards"), [...cardsFor(l), ...review]);
 }
@@ -360,12 +380,13 @@ function flashcards(root, words) {
     root.innerHTML = `
       <div class="flash">
         <p class="muted" style="text-align:center">${deck.length} left · tap the card to flip</p>
-        <div class="card">${flipped
+        <div class="card" role="button" tabindex="0" aria-label="Flip card">${flipped
           ? `<div class="m">${esc(c.m)}</div>${c.e ? `<div class="e">"${esc(c.e)}"</div>` : ""}`
           : `<div class="w">${esc(c.w)}</div><div class="muted">${esc(c.src)}</div>`}</div>
         ${flipped ? `<div class="fbtns"><button class="again">✗ Again</button><button class="good">✓ Got it</button></div>` : ""}
       </div>`;
     root.querySelector(".card").onclick = () => { flipped = !flipped; draw(); };
+    root.querySelector(".card").onkeydown = (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), e.target.click());
     if (flipped) {
       root.querySelector(".again").onclick = () => { grade(c.w, false); c.missed = true; deck.push(deck.shift()); flipped = false; draw(); };
       root.querySelector(".good").onclick = () => { if (!c.missed) right++; grade(c.w, true); deck.shift(); flipped = false; draw(); };
