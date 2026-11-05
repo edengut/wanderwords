@@ -349,7 +349,7 @@ function renderAllCards() {
       ${LESSONS.map((l) => `<button class="ghost" data-k="${l.n}">${l.n}. ${esc(l.title)}</button>`).join("")}
     </div>
     <div id="cards"></div>
-    <p><a href="#/student">← My lessons</a></p>`;
+    <div class="row" style="margin-top:24px"><a class="btn ghost" href="#/student">← My lessons</a></div>`;
   const due = () => LESSONS.flatMap(cardsFor).filter((x) => studied(x) && isDue(x)).slice(0, 30);
   const pick = (k) => {
     $app.querySelectorAll(".row button").forEach((b) => b.classList.toggle("ghost", b.dataset.k !== k));

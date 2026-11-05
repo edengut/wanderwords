@@ -275,3 +275,4 @@ body.italia {
 .postcard figcaption { padding-right: 56px; }
 .italia .logo-mark { color: #fff; }
 html:has(body.italia) { background: #1f3f42; }
+main > p.muted { color: #c3c8e6; }
