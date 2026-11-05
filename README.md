@@ -25,5 +25,5 @@ All paths are relative and there is no build step, so it works from any repo nam
 
 ## Change things
 
-- Lessons: `data/lessons.js`. Copy the lesson 1 object to add lesson 2; phases must add up to 50 minutes.
+- Lessons: `data/lessons.js`. Copy a lesson object to add the next one; phases must add up to 50 minutes. Every word in `groups` goes onto the practice page (`#/cards` → All words) automatically. See `CLAUDE.md` for the checklist.
 - Password: `TEACHER_PASS` in `app.js` is `btoa("your password")` in lowercase (login ignores case). Run `btoa("newpass")` in the browser console to get a new value.

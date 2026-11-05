@@ -344,15 +344,19 @@ function renderAllCards() {
     <p class="kicker">Souvenir shop</p><h1 class="page">🃏 Practise words</h1>
     <p class="muted">Cards you know come back less often. Cards you miss come back soon.</p>
     <div class="row">
-      <button data-k="due">Due today</button>
+      <button data-k="all">All words</button>
+      <button class="ghost" data-k="due">Due today</button>
       ${LESSONS.map((l) => `<button class="ghost" data-k="${l.n}">${l.n}. ${esc(l.title)}</button>`).join("")}
     </div>
     <div id="cards"></div>
     <p><a href="#/student">← My lessons</a></p>`;
-  const pick = (k) => flashcards($app.querySelector("#cards"),
-    k === "due" ? LESSONS.flatMap(cardsFor).filter((x) => studied(x) && isDue(x)).slice(0, 30) : cardsFor(lesson(k)));
+  const due = () => LESSONS.flatMap(cardsFor).filter((x) => studied(x) && isDue(x)).slice(0, 30);
+  const pick = (k) => {
+    $app.querySelectorAll(".row button").forEach((b) => b.classList.toggle("ghost", b.dataset.k !== k));
+    flashcards($app.querySelector("#cards"), k === "all" ? LESSONS.flatMap(cardsFor) : k === "due" ? due() : cardsFor(lesson(k)));
+  };
   $app.querySelector(".row").onclick = (e) => e.target.dataset.k && pick(e.target.dataset.k);
-  pick("due");
+  pick(due().length ? "due" : "all");
 }
 
 // Leitner boxes: box 0..5, next review after DAYS[box] days.
