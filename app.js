@@ -387,7 +387,7 @@ function flashcards(root, words) {
         <div class="card" role="button" tabindex="0" aria-label="Flip card">${flipped
           ? `<div class="m">${esc(c.m)}</div>${c.e ? `<div class="e">"${esc(c.e)}"</div>` : ""}`
           : `<div class="w">${esc(c.w)}</div><div class="muted">${esc(c.src)}</div>`}</div>
-        ${flipped ? `<div class="fbtns"><button class="again">✗ Again</button><button class="good">✓ Got it</button></div>` : ""}
+        <div class="fbtns"${flipped ? "" : " hidden"}><button class="again">✗ Again</button><button class="good">✓ Got it</button></div>
       </div>`;
     root.querySelector(".card").onclick = () => { flipped = !flipped; draw(); };
     root.querySelector(".card").onkeydown = (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), e.target.click());
