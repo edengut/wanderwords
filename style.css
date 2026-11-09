@@ -304,12 +304,12 @@ body.germany {
 .germany .ticket h1 { font-size: clamp(2.4rem, 6.5vw, 4.4rem); line-height: .92; color: #f4ecdc; text-transform: uppercase; }
 .germany .ticket-route small, .germany .ticket-stub small { color: #ffcc00; }
 .germany .ticket-route b { color: #ffcc00; font-size: 3.2rem; }
-.germany .timer .plane { color: #e2231a; text-shadow: none; }
+.germany .timer .plane { color: #c8102e; text-shadow: none; }
 .germany .ticket-stub { background: #ffcc00; border-left: 3px solid #111; }
 .germany .ticket-stub small { color: #111; }
 
 /* Gates → numbered board sections */
-.germany .gate-no { border-radius: 0; background: #e2231a; color: #f4ecdc; border: 3px solid #111; box-shadow: var(--hard); transform: rotate(-4deg); }
+.germany .gate-no { border-radius: 0; background: #c8102e; color: #f4ecdc; border: 3px solid #111; box-shadow: var(--hard); transform: rotate(-4deg); }
 .germany .gate::before { border-left: 3px dashed #111; }
 .germany .gate-body { border-radius: 0; background: #fffaf0; border: 3px solid #111; box-shadow: var(--hard); }
 .germany .gate-body > h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1; text-transform: uppercase; }
@@ -349,3 +349,39 @@ body.germany {
 .germany .phrase { background: #0b4a3a; color: #f4ecdc; border: 3px solid #111; border-radius: 0; box-shadow: 4px 4px 0 #ffcc00; font-size: 1.05rem; }
 .germany .box { border-radius: 0; border: 3px solid #111; box-shadow: var(--hard); background: #fffaf0; }
 .germany .btn { border-radius: 0; border: 3px solid #111; box-shadow: 4px 4px 0 #111; }
+
+/* Germany: contrast fixes (rui audit) */
+.germany .tag-m .tap { color: #6b4f12; }
+.germany .ticket-main .pass-top { color: #c9d8cf; }
+.germany .ticket-route .plane, .germany .ticket-route > span, .germany .pass-line { color: #ffcc00; }
+.germany .p0 .pc-img, .germany .p3 .pc-img, .germany .p5 .pc-img { color: #f4ecdc; }
+
+/* Germany: motion */
+@keyframes de-rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
+@keyframes de-stamp { 0% { opacity: 0; transform: scale(2.2) rotate(-25deg); } 70% { opacity: 1; transform: scale(.92) rotate(-2deg); } 100% { transform: rotate(-4deg); } }
+@keyframes de-drop { from { opacity: 0; translate: 0 -30px; } to { opacity: 1; translate: 0 0; } }
+@keyframes de-stripe { from { background-size: 0 100%; } to { background-size: 100% 100%; } }
+@keyframes de-wiggle { 0%, 100% { rotate: 0deg; } 30% { rotate: -3deg; } 60% { rotate: 2.5deg; } }
+@keyframes de-blink { 50% { opacity: .35; } }
+
+.germany .ticket { animation: de-rise .7s cubic-bezier(.2, .9, .3, 1.2) both; }
+.germany .ticket-main::before { background-repeat: no-repeat; animation: de-stripe 1s .3s cubic-bezier(.6, 0, .2, 1) both; }
+.germany .ticket-route .plane, .germany .ticket-route > span { display: inline-block; animation: de-fly 2.4s ease-in-out infinite alternate; }
+@keyframes de-fly { from { transform: translateX(-30px); } to { transform: translateX(30px); } }
+.germany .gate-body { animation: de-rise linear both; animation-timeline: view(); animation-range: entry 0% entry 45%; }
+.germany .gate-no { animation: de-stamp .6s cubic-bezier(.3, 1.5, .5, 1) both; animation-timeline: view(); animation-range: entry 10% entry 60%; }
+.germany .postcard, .germany .tag-card, .germany .bubble, .germany .phrase { animation: de-drop linear both; animation-timeline: view(); animation-range: entry 0% entry 70%; }
+.germany .postcard:hover, .germany .tag-card:hover { animation: de-wiggle .45s ease-in-out; }
+.germany .tag-card { transition: transform .2s, box-shadow .2s, background .2s; }
+.germany .tag-card:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 #111; }
+.germany .tag-card.open { transform: rotate(-1.5deg); }
+.germany .btn:hover, .germany button:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #111; }
+.germany .btn:active, .germany button:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 #111; }
+.germany .kicker { animation: de-blink 1.6s steps(1) 3; }
+
+@media (prefers-reduced-motion: reduce) { .germany * { animation: none !important; } }
+.germany main { overflow-x: clip; }
+.germany .phase h3 small { color: #a50d25; }
+.germany .phase { border-radius: 0; border: 3px solid #111; border-left: 12px solid #111; box-shadow: var(--hard); background: #fffaf0; }
+.germany .phase.now { border-left-color: #c8102e; }
+.germany .tag-card.open .tag-e { color: #3a2e12; }
