@@ -278,110 +278,115 @@ html:has(body.italia) { background: #1f3f42; }
 main > p.muted { color: #c3c8e6; }
 
 /* ---------- Theme: Germany as a brand board (lesson 3) ----------
-   Studio identity-board look: cream grid paper, flat colour blocks, huge grotesk type,
-   sticker labels, tilted cut-out cards, hard offset shadows. */
+   Studio identity-board look: cream grid paper, flat colour blocks, grotesk type, stickers.
+   One colour rule for every "card" surface: odd = deep green + cream text, even = gold + black text.
+   Light text on a colour block always gets a black outline (--outline). */
 body.germany {
   --display: "Bricolage Grotesque", "Inter", system-ui, sans-serif;
-  --night: #111; --deep: #1d1d1b; --dusk: #6b6b6b; --sun: #e2231a; --gold: #ffcc00; --coral: #e2231a; --sea: #0b4a3a;
-  --paper: #f4ecdc; --paper2: #ebe1cc; --line: #1110; --ink: #111; --coral-ink: #e2231a;
-  --hard: 6px 6px 0 #111;
+  --night: #111; --deep: #1d1d1b; --dusk: #6b6b6b; --sun: #c8102e; --gold: #ffcc00; --coral: #c8102e; --sea: #0b4a3a;
+  --paper: #f4ecdc; --paper2: #ebe1cc; --line: #1110; --ink: #111; --muted: #4a4636; --coral-ink: #a50d25;
+  --green: #0b4a3a; --cream: #f4ecdc; --white: #fffaf0; --red: #c8102e;
+  --hard: 6px 6px 0 #111; --hard-sm: 4px 4px 0 #111;
+  --outline: -1px -1px 0 #111, 1px -1px 0 #111, -1px 1px 0 #111, 1px 1px 0 #111, 2px 2px 0 #111;
+  --outline-sm: -1px -1px 0 #111, 1px -1px 0 #111, -1px 1px 0 #111, 1px 1px 0 #111;
   background:
     linear-gradient(#1111 1px, transparent 1px) 0 0 / 28px 28px,
     linear-gradient(90deg, #1111 1px, transparent 1px) 0 0 / 28px 28px,
-    #f4ecdc;
+    var(--cream);
   background-attachment: fixed;
 }
-.germany header { background: #111; border-bottom: 6px solid; border-image: linear-gradient(90deg, #111 0 33.3%, #e2231a 33.3% 66.6%, #ffcc00 66.6%) 1; }
-.germany .logo-mark { background: #ffcc00; color: #111; }
-.germany h1, .germany h2, .germany h3 { letter-spacing: -.035em; font-weight: 800; }
-.germany main > h2, .germany .kicker { color: #111; }
-.germany .kicker { background: #ffcc00; display: inline-block; padding: 3px 10px; border: 2px solid #111; border-radius: 99px; transform: rotate(-2deg); }
+/* Rotated/shadowed elements: own compositing layer + transparent outline = smooth edges on hi-res screens. */
+.germany :is(.ticket, .gate-no, .gate-body, .postcard, .pc-stamp, .tag-card, .bubble, .bubble b, .phrase, .kicker, .btn, button, .box, .rule, .phase) {
+  outline: 1px solid transparent; backface-visibility: hidden; transform-style: preserve-3d;
+}
 
-/* Boarding pass → cover board */
+/* Header */
+.germany header { background: #111; border-bottom: 6px solid; border-image: linear-gradient(90deg, #111 0 33.3%, var(--red) 33.3% 66.6%, var(--gold) 66.6%) 1; }
+.germany .logo-mark { background: var(--gold); color: #111; }
+
+/* Type: anything sitting straight on the cream page is dark */
+.germany h1, .germany h2, .germany h3 { letter-spacing: -.035em; font-weight: 800; }
+.germany main > h2, .germany main > h1, .germany main > .lead, .germany main > p, .germany .kicker { color: #111; }
+.germany .kicker { background: var(--gold); display: inline-block; padding: 3px 10px; border: 2px solid #111; border-radius: 99px; transform: rotate(-2deg); }
+
+/* Buttons: solid red + cream (outlined) / ghost = white + black. Both with black stroke. */
+.germany :is(button, .btn) { border-radius: 0; border: 3px solid #111; background: var(--red); color: var(--white); text-shadow: var(--outline); box-shadow: var(--hard-sm); font-weight: 700; }
+.germany :is(button, .btn).ghost { background: var(--white); color: #111; text-shadow: none; }
+.germany :is(button, .btn):hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #111; }
+.germany :is(button, .btn):active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 #111; }
+
+/* Cover */
 .germany .ticket { border-radius: 0; border: 3px solid #111; box-shadow: 10px 10px 0 #111; }
-.germany .ticket-main { background: #0b4a3a; color: #f4ecdc; padding: 30px 32px; }
-.germany .ticket-main::before { height: 14px; background: linear-gradient(90deg, #111 0 33.3%, #e2231a 33.3% 66.6%, #ffcc00 66.6%); }
-.germany .ticket h1 { font-size: clamp(2.4rem, 6.5vw, 4.4rem); line-height: .92; color: #f4ecdc; text-transform: uppercase; }
-.germany .ticket-route small, .germany .ticket-stub small { color: #ffcc00; }
-.germany .ticket-route b { color: #ffcc00; font-size: 3.2rem; }
-.germany .timer .plane { color: #c8102e; text-shadow: none; }
-.germany .ticket-stub { background: #ffcc00; border-left: 3px solid #111; }
+.germany .ticket-main { background: var(--green); color: var(--cream); text-shadow: var(--outline-sm); padding: 30px 32px; }
+.germany .ticket-main::before { height: 14px; background: linear-gradient(90deg, #111 0 33.3%, var(--red) 33.3% 66.6%, var(--gold) 66.6%) no-repeat; }
+.germany .ticket h1 { font-size: clamp(2.4rem, 6.5vw, 4.4rem); line-height: .95; color: var(--cream); text-transform: uppercase; text-shadow: var(--outline), 4px 4px 0 #111; }
+.germany .ticket-main .pass-top { color: #c9d8cf; }
+.germany .ticket-route small { color: var(--gold); }
+.germany .ticket-route b { color: var(--gold); font-size: 3.2rem; text-shadow: var(--outline); }
+.germany .pass-line { color: var(--gold); }
+.germany .ticket-stub { background: var(--gold); border-left: 3px solid #111; }
 .germany .ticket-stub small { color: #111; }
 
-/* Gates → numbered board sections */
-.germany .gate-no { border-radius: 0; background: #c8102e; color: #f4ecdc; border: 3px solid #111; box-shadow: var(--hard); transform: rotate(-4deg); }
+/* Gates */
 .germany .gate::before { border-left: 3px dashed #111; }
-.germany .gate-body { border-radius: 0; background: #fffaf0; border: 3px solid #111; box-shadow: var(--hard); }
+.germany .gate-no { border-radius: 0; background: var(--red); color: var(--white); text-shadow: var(--outline); border: 3px solid #111; box-shadow: var(--hard); transform: rotate(-4deg); }
+.germany .gate-body { border-radius: 0; background: var(--white); border: 3px solid #111; box-shadow: var(--hard); }
 .germany .gate-body > h2 { font-size: clamp(1.8rem, 4vw, 2.6rem); line-height: 1; text-transform: uppercase; }
-.germany .gate-body h3.group { display: inline-block; background: #111; color: #ffcc00; padding: 4px 12px; font-size: 1rem; text-transform: uppercase; letter-spacing: .04em; }
+.germany h3.group { display: inline-block; background: #111; color: var(--gold); padding: 4px 12px; font-size: 1rem; text-transform: uppercase; letter-spacing: .04em; }
 
-/* Postcards → tilted cut-out stickers on a bento grid */
+/* THE colour rule: postcards and word cards share it */
 .germany .postcards { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 26px; padding: 14px 6px; }
-.germany .postcard { border-radius: 14px; border: 3px solid #111; box-shadow: var(--hard); }
-.germany .postcard:nth-child(odd) { transform: rotate(-2.5deg); }
-.germany .postcard:nth-child(even) { transform: rotate(2deg); }
-.germany .postcard:hover { transform: rotate(0) translateY(-6px) scale(1.03); }
-.germany .pc-img { border-radius: 8px; border: 2px solid #111; font-size: 58px; }
-.germany .p0 .pc-img { background: #0b4a3a; }
-.germany .p1 .pc-img { background: #ffcc00; }
-.germany .p2 .pc-img { background: #f08a24; }
-.germany .p3 .pc-img { background: #e2231a; }
-.germany .p4 .pc-img { background: #f4ecdc; }
-.germany .p5 .pc-img { background: #111; }
-.germany .pc-hand { color: #e2231a; }
-.germany .pc-stamp { border-radius: 50%; width: 50px; height: 50px; background: #ffcc00; border: 2px solid #111; outline: none; transform: rotate(-12deg); }
+.germany :is(.postcard, .tag-card) { --card: var(--green); --card-ink: var(--cream); --card-shadow: var(--outline); --card-shadow-sm: var(--outline-sm); }
+.germany :is(.postcard, .tag-card):nth-child(even) { --card: var(--gold); --card-ink: #111; --card-shadow: none; --card-shadow-sm: none; }
+.germany .postcard { border-radius: 14px; border: 3px solid #111; box-shadow: var(--hard); background: var(--white); }
+.germany .postcard:nth-child(odd) { rotate: -2deg; }
+.germany .postcard:nth-child(even) { rotate: 2deg; }
+.germany .postcard:hover { rotate: 0deg; transform: translateY(-6px) scale(1.03); }
+.germany .pc-img { border-radius: 8px; border: 2px solid #111; font-size: 58px; background: var(--card); color: var(--card-ink); }
+.germany .pc-hand { color: var(--coral-ink); }
+.germany .pc-stamp { border-radius: 50%; width: 50px; height: 50px; background: var(--card); color: var(--card-ink); border: 2px solid #111; outline: none; transform: rotate(-12deg); }
 
-/* Word tags → chunky stickers */
-.germany .tag-card { border-radius: 14px; border: 3px solid #111; background: #fffaf0; box-shadow: 4px 4px 0 #111; }
-.germany .tag-card:nth-child(3n+1) { background: #f4ecdc; }
-.germany .tag-card.open { background: #ffcc00; box-shadow: 4px 4px 0 #e2231a; }
-.germany .tag-card.open .tag-m { color: #111; }
+.germany .tag-card { border-radius: 14px; border: 3px solid #111; background: var(--card); color: var(--card-ink); box-shadow: var(--hard-sm); transition: transform .2s, box-shadow .2s; }
+.germany .tag-card :is(.tag-w, .tag-m, .tag-e, .tap) { color: var(--card-ink); }
+.germany .tag-card .tag-w { text-shadow: var(--card-shadow); }
+.germany .tag-card :is(.tag-m, .tag-e, .tap) { text-shadow: var(--card-shadow-sm); }
+.germany .tag-card .tap { opacity: .85; }
+.germany .tag-card:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 #111; }
+.germany .tag-card.open { transform: rotate(-1.5deg); box-shadow: 4px 4px 0 var(--red); }
 
-/* Rules, quiz, questions, phrases */
-.germany .rule { border-radius: 0; border: 3px solid #111; border-left: 12px solid #e2231a; }
-.germany .rule .form { background: #111; color: #ffcc00; border-radius: 0; }
+/* Rules, quiz, questions, phrases, boxes, teacher phases */
+.germany .rule { border-radius: 0; border: 3px solid #111; border-left: 12px solid var(--red); }
+.germany .rule .form { background: #111; color: var(--gold); border-radius: 0; }
+.germany .quiz.passport { background: var(--white); border: 3px solid #111; border-radius: 0; box-shadow: var(--hard); }
+.germany .row { align-items: stretch; }
 .germany .quiz .q { border-bottom: 2px solid #111; }
 .germany .quiz select { border: 2px solid #111; border-radius: 0; }
-.germany .bubble { border: 3px solid #111; border-radius: 22px 22px 22px 0; box-shadow: 4px 4px 0 #111; }
-.germany .bubble:nth-child(3n+2) { background: #f4ecdc; }
-.germany .bubble b { background: #e2231a; border-radius: 0; transform: rotate(-6deg); }
-.germany .followups em { background: #ffcc00; color: #111; border: 2px solid #111; }
-.germany .phrase { background: #0b4a3a; color: #f4ecdc; border: 3px solid #111; border-radius: 0; box-shadow: 4px 4px 0 #ffcc00; font-size: 1.05rem; }
-.germany .box { border-radius: 0; border: 3px solid #111; box-shadow: var(--hard); background: #fffaf0; }
-.germany .btn { border-radius: 0; border: 3px solid #111; box-shadow: 4px 4px 0 #111; }
+.germany .bubble { border: 3px solid #111; border-radius: 22px 22px 22px 0; box-shadow: var(--hard-sm); background: var(--white); }
+.germany .bubble b { background: var(--red); border-radius: 0; transform: rotate(-6deg); text-shadow: var(--outline); }
+.germany .followups em { background: var(--gold); color: #111; border: 2px solid #111; }
+.germany .phrase { background: var(--green); color: var(--cream); text-shadow: var(--outline); border: 3px solid #111; border-radius: 0; box-shadow: 4px 4px 0 var(--gold); font-size: 1.05rem; }
+.germany .box { border-radius: 0; border: 3px solid #111; box-shadow: var(--hard); background: var(--white); }
+.germany .phase { border-radius: 0; border: 3px solid #111; border-left: 12px solid #111; box-shadow: var(--hard); background: var(--white); }
+.germany .phase.now { border-left-color: var(--red); }
+.germany .phase h3 small { color: var(--coral-ink); }
+.germany .timer .plane { color: var(--red); text-shadow: none; }
+.germany main { overflow-x: clip; }
+.germany .flash > .muted { color: var(--muted); }
 
-/* Germany: contrast fixes (rui audit) */
-.germany .tag-m .tap { color: #6b4f12; }
-.germany .ticket-main .pass-top { color: #c9d8cf; }
-.germany .ticket-route .plane, .germany .ticket-route > span, .germany .pass-line { color: #ffcc00; }
-.germany .p0 .pc-img, .germany .p3 .pc-img, .germany .p5 .pc-img { color: #f4ecdc; }
-
-/* Germany: motion */
+/* Motion */
 @keyframes de-rise { from { opacity: 0; transform: translateY(40px); } to { opacity: 1; transform: none; } }
 @keyframes de-stamp { 0% { opacity: 0; transform: scale(2.2) rotate(-25deg); } 70% { opacity: 1; transform: scale(.92) rotate(-2deg); } 100% { transform: rotate(-4deg); } }
 @keyframes de-drop { from { opacity: 0; translate: 0 -30px; } to { opacity: 1; translate: 0 0; } }
 @keyframes de-stripe { from { background-size: 0 100%; } to { background-size: 100% 100%; } }
 @keyframes de-wiggle { 0%, 100% { rotate: 0deg; } 30% { rotate: -3deg; } 60% { rotate: 2.5deg; } }
+@keyframes de-drive { from { transform: translateX(-30px); } to { transform: translateX(30px); } }
 @keyframes de-blink { 50% { opacity: .35; } }
-
 .germany .ticket { animation: de-rise .7s cubic-bezier(.2, .9, .3, 1.2) both; }
-.germany .ticket-main::before { background-repeat: no-repeat; animation: de-stripe 1s .3s cubic-bezier(.6, 0, .2, 1) both; }
-.germany .ticket-route .plane, .germany .ticket-route > span { display: inline-block; animation: de-fly 2.4s ease-in-out infinite alternate; }
-@keyframes de-fly { from { transform: translateX(-30px); } to { transform: translateX(30px); } }
+.germany .ticket-main::before { animation: de-stripe 1s .3s cubic-bezier(.6, 0, .2, 1) both; }
+.germany .pass-line { display: inline-block; animation: de-drive 2.4s ease-in-out infinite alternate; }
 .germany .gate-body { animation: de-rise linear both; animation-timeline: view(); animation-range: entry 0% entry 45%; }
 .germany .gate-no { animation: de-stamp .6s cubic-bezier(.3, 1.5, .5, 1) both; animation-timeline: view(); animation-range: entry 10% entry 60%; }
-.germany .postcard, .germany .tag-card, .germany .bubble, .germany .phrase { animation: de-drop linear both; animation-timeline: view(); animation-range: entry 0% entry 70%; }
-.germany .postcard:hover, .germany .tag-card:hover { animation: de-wiggle .45s ease-in-out; }
-.germany .tag-card { transition: transform .2s, box-shadow .2s, background .2s; }
-.germany .tag-card:hover { transform: translate(-2px, -2px); box-shadow: 7px 7px 0 #111; }
-.germany .tag-card.open { transform: rotate(-1.5deg); }
-.germany .btn:hover, .germany button:hover { transform: translate(-2px, -2px); box-shadow: 6px 6px 0 #111; }
-.germany .btn:active, .germany button:active { transform: translate(3px, 3px); box-shadow: 1px 1px 0 #111; }
+.germany :is(.postcard, .tag-card, .bubble, .phrase) { animation: de-drop linear both; animation-timeline: view(); animation-range: entry 0% entry 70%; }
+.germany :is(.postcard, .tag-card):hover { animation: de-wiggle .45s ease-in-out; }
 .germany .kicker { animation: de-blink 1.6s steps(1) 3; }
-
 @media (prefers-reduced-motion: reduce) { .germany * { animation: none !important; } }
-.germany main { overflow-x: clip; }
-.germany .phase h3 small { color: #a50d25; }
-.germany .phase { border-radius: 0; border: 3px solid #111; border-left: 12px solid #111; box-shadow: var(--hard); background: #fffaf0; }
-.germany .phase.now { border-left-color: #c8102e; }
-.germany .tag-card.open .tag-e { color: #3a2e12; }

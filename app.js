@@ -97,10 +97,10 @@ function renderList(role) {
 
 function navLinks(role, l) {
   const prev = lesson(l.n - 1), next = lesson(l.n + 1);
-  return `<div class="row" style="justify-content:space-between;margin-top:24px">
-    ${prev ? `<a class="btn ghost" href="#/${role}/${prev.n}">← Flight ${prev.n}</a>` : "<span></span>"}
+  return `<div class="row" style="margin-top:24px">
+    ${prev ? `<a class="btn ghost" href="#/${role}/${prev.n}">← Flight ${prev.n}</a>` : ""}
     <a class="btn ghost" href="#/${role}">All flights</a>
-    ${next ? `<a class="btn ghost" href="#/${role}/${next.n}">Flight ${next.n} →</a>` : "<span></span>"}
+    ${next ? `<a class="btn ghost" href="#/${role}/${next.n}">Flight ${next.n} →</a>` : ""}
   </div>`;
 }
 
