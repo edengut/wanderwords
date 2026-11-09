@@ -6,3 +6,4 @@
 - Make the content personal to the student (his real trips and interests), not generic.
 - A lesson can have its own `theme` (a body class in `style.css`, like `italia`).
 - Before pushing: `python3 -m http.server 8765`, then check `/`, `/#/student/N`, `/#/teacher/N` and `/#/cards` with no console errors.
+- After adding a lesson, update `COVERAGE.md` (what's used from Eden's PDFs).

@@ -276,3 +276,29 @@ body.italia {
 .italia .logo-mark { color: #fff; }
 html:has(body.italia) { background: #1f3f42; }
 main > p.muted { color: #c3c8e6; }
+
+/* ---------- Theme: Germany by train (lesson 3) ---------- */
+body.germany {
+  --coral-ink: #c8102e;
+  --night: #121212; --deep: #3a3a3a; --dusk: #6b6b6b; --sun: #dd0000; --gold: #ffce00; --coral: #dd0000; --sea: #3a3a3a;
+  --paper: #fbf9f3; --paper2: #f1eee4; --line: #ddd8c8;
+  background: linear-gradient(180deg, #121212 0, #2b2b2b 40vh, #8a1010 110vh, #dd0000 160vh, #f0a800 220vh, #ffce00 270vh);
+  background-attachment: fixed;
+}
+.germany .pc-hand { color: #c8102e; }
+.germany .p0 .pc-img { background: linear-gradient(160deg, #6b6b6b, #121212); }
+.germany .p1 .pc-img { background: linear-gradient(160deg, #ffce00, #dd0000); }
+.germany .p2 .pc-img { background: linear-gradient(160deg, #a7c4a0, #3a5a40); }
+.germany .p3 .pc-img { background: linear-gradient(160deg, #dd0000, #121212); }
+.germany .p4 .pc-img { background: linear-gradient(160deg, #ffce00, #6b6b6b); }
+.germany .p5 .pc-img { background: linear-gradient(160deg, #3a3a3a, #dd0000); }
+.germany .ticket-main::before { background: linear-gradient(90deg, #121212 0 33%, #dd0000 33% 66%, #ffce00 66%); }
+.germany .postcards { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.germany .tag-card { background: linear-gradient(180deg, #fbf9f3, #ece7d8); }
+.germany .tag-card.open { background: linear-gradient(180deg, #fff3b8, #ffce00); box-shadow: 0 4px 0 #c9a000; }
+.germany .tag-card.open .tag-m { color: #121212; }
+.germany .rule { border-left-color: #dd0000; }
+.germany .rule .form { background: #f1eee4; color: #121212; }
+.germany .bubble b { background: #2b2b2b; }
+.germany .followups em { background: #fff3b8; color: #a00c22; }
+.germany .phrase { background: linear-gradient(135deg, #fff, #f1eee4); }
