@@ -1,7 +1,7 @@
 // Travel course (B1 → B2), 50-minute lessons. Source: Data/Eden's_Files PDFs.
 // words: [word, meaning, example]. quiz: words to test (all of `words` by default).
 // Optional: rules (grammar cards), drill ([sentence, options, answer]), gates ({warmup|words|quiz|speak: [title, sub]}),
-// theme (body class in style.css), warmup[].stamp.
+// theme (body class in style.css), icon (lesson-list ticket emoji), warmup[].stamp.
 // Phases must add up to 50.
 
 const P = (min, name, teacher, student) => ({ min, name, teacher, student });
@@ -83,7 +83,7 @@ const LESSONS = [
     homework: "Write 6–8 sentences about a real trip you took, using at least 6 new words. Practise the flashcards for 5 minutes on 3 different days.",
   },
   {
-    n: 2, title: "Ciao, Italia! Have you ever…?", theme: "italia",
+    n: 2, title: "Ciao, Italia! Have you ever…?", theme: "italia", icon: "🇮🇹",
     goal: "Talk about YOUR trips in Italy (Rome, Florence, Pisa, Milano, Lake Garda, Gardaland, the Lamborghini Museum) with the present perfect (Have you ever…? I've been…) and the past simple (We went… It was…), using the words from lesson 1.",
     gates: { warmup: ["Your trips, your story", "These are places you've been to. Pick one and tell me about it."],
              words: ["Pack your verbs", "Say the three forms, then tap the tag to check."],
@@ -209,7 +209,7 @@ const LESSONS = [
     homework: "Write a short travel blog post (8–10 sentences) about your trip to Italy: start with what you've done (present perfect), then tell the story in the past simple. Use at least 5 words from lesson 1. Practise the flashcards for 5 minutes on 3 days.",
   },
   {
-    n: 3, title: "Germany: what do you remember?", theme: "germany",
+    n: 3, title: "Germany: what do you remember?", theme: "germany", icon: "🇩🇪",
     goal: "Bring back memories of YOUR road trip in Germany (Europa-Park, the BMW and Mercedes-Benz museums, villages and nature by rental car): what you expected before, what surprised you, what felt strange, and what you remember most. Tell it as a story with 'I remember…', 'I expected… but…' and 'The strangest thing was…'.",
     gates: { warmup: ["Next stop: Germany", "These are places from your trip. What do you still remember?"],
              words: ["Before the trip & what went wrong", "Read the example, guess the meaning, then tap to check."],

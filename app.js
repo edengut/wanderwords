@@ -11,7 +11,13 @@ const $app = document.getElementById("app");
 const $who = document.getElementById("who");
 // Prefixed keys: all repos under one github.io account share the same localStorage.
 const store = {
-  get: (k, d) => { try { return JSON.parse(localStorage.getItem("travel:" + k)) ?? d; } catch { return d; } },
+  // Wrong-shaped values (e.g. a string where an object is expected) fall back to the default too.
+  get: (k, d) => {
+    try {
+      const v = JSON.parse(localStorage.getItem("travel:" + k));
+      return v !== null && typeof v === typeof d && Array.isArray(v) === Array.isArray(d) ? v : d;
+    } catch { return d; }
+  },
   set: (k, v) => localStorage.setItem("travel:" + k, JSON.stringify(v)),
 };
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -52,12 +58,12 @@ function renderHome() {
 }
 
 // A boarding-pass link: main part + tear-off stub.
-function pass(href, cls, label, title, sub, icon, extra = "") {
+function pass(href, cls, label, title, sub, icon) {
   return `<a class="pass ${cls}" href="${href}">
     <div class="pass-main">
       <div class="pass-top"><span>${label}</span><span>WANDERWORDS AIR</span></div>
       <div class="pass-route"><b>B1</b><span class="pass-line">✈</span><b>B2</b></div>
-      <h2>${esc(title)}</h2><p>${esc(sub)}</p>${extra}
+      <h2>${esc(title)}</h2><p>${esc(sub)}</p>
     </div>
     <div class="pass-stub"><div class="pass-icon">${icon}</div><div class="barcode"></div></div>
   </a>`;
@@ -91,7 +97,7 @@ function renderList(role) {
     <p class="lead">50-minute flights · B1 → B2. ${role === "student" ? `<a href="#/cards">Practise all words →</a>` : `${done.length}/${LESSONS.length} landed.`}</p>
     <div class="home">
       ${LESSONS.map((l) => pass(`#/${role}/${l.n}`, done.includes(l.n) ? "done" : "", `FLIGHT WW-${String(l.n).padStart(3, "0")}`,
-        l.title, `${wordsOf(l).length} words · ${l.phases.length} gates · 50 min`, done.includes(l.n) ? "✅" : "🌍")).join("")}
+        l.title, `${wordsOf(l).length} words · ${l.phases.length} gates · 50 min`, done.includes(l.n) ? "✅" : l.icon || "🌍")).join("")}
     </div>`;
 }
 
@@ -114,7 +120,7 @@ const warmupHtml = (l) => `<div class="postcards">${l.warmup.map((p, i) => `
 // A numbered stop on the lesson's route.
 const gate = (n, title, sub, body) => `<section class="gate">
   <div class="gate-no"><span>GATE</span><b>${n}</b></div>
-  <div class="gate-body"><h2>${title}</h2>${sub ? `<p class="lead">${sub}</p>` : ""}${body}</div></section>`;
+  <div class="gate-body"><h2>${esc(title)}</h2>${sub ? `<p class="lead">${esc(sub)}</p>` : ""}${body}</div></section>`;
 
 // Words as luggage tags. hideMeaning: tap the tag to flip it and see the meaning.
 const vocabHtml = (l, hideMeaning) => l.groups.map((g) => `
