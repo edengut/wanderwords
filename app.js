@@ -140,6 +140,9 @@ const questionsHtml = (l) => (qn = 0, l.questions.map((s) => `
 
 const phrasesHtml = (l) => `<div class="phrases">${l.phrases.map((p) => `<div class="phrase">💬 ${esc(p)}</div>`).join("")}</div>`;
 
+const readingHtml = (l) => `<div class="reading"><h3>${esc(l.reading.title)}</h3>
+  ${l.reading.paragraphs.map((p) => `<p>${esc(p)}</p>`).join("")}</div>`;
+
 // Select quiz. sections: [{name, items: [[label, answer, options]]}]. key: where the best score is saved.
 function quiz(root, sections, key) {
   let n = 0;
@@ -205,6 +208,7 @@ function renderTeacherLesson(l) {
         <div class="stu">🎒 Student sees: ${p.student.map(esc).join(" · ")}</div>
       </div>`).join("")}
     <h2>Warm-up postcards</h2>${warmupHtml(l)}
+    ${l.reading ? `<h2>Reading text</h2>${readingHtml(l)}` : ""}
     ${l.rules ? `<h2>Grammar</h2>${rulesHtml(l)}` : ""}
     ${l.drill ? `<h2>Gap-fill answers</h2>${drillKeyHtml(l)}` : ""}
     <h2>Words (${wordsOf(l).length})</h2>${vocabHtml(l, false)}
@@ -297,6 +301,7 @@ function renderStudentLesson(l) {
   const g = (k, t, sub) => l.gates?.[k] || [t, sub];
   const gates = [
     [...g("warmup", "Where would you rather be?", "Look at the two postcards. Choose one and say why."), warmupHtml(l)],
+    l.reading && [...g("reading", "Reading", "Read once fast, then read again for details."), readingHtml(l)],
     l.rules && ["Grammar check-in", "Read each card and the examples. Notice when we use each form.", rulesHtml(l)],
     [...g("words", "Pack your words", "Read the example on each luggage tag, guess the meaning, then tap the tag to check."), vocabHtml(l, true)],
     l.drill && ["Fill the gaps", "Choose the right form for each sentence. Every right answer gets a stamp.", '<div id="drill"></div>'],

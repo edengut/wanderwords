@@ -22,6 +22,15 @@ Source: `../Data/Eden's_Files/`. ✅ = used in a lesson (lesson number), ⬜ = n
 | 4. Hypotheticals & future plans | ⬜ (good for a 2nd conditional lesson) |
 | 5. Deeper / opinion questions | ⬜ |
 
+## B2_Technology_Lesson.pdf
+| Section | Status |
+|---|---|
+| Reading text: How technology shapes our daily lives | ✅ L4 (full text in the app) |
+| Vocabulary table (8 words) | ✅ L4 (all 8) |
+| Vocabulary Practice (own sentences: self-confidence, digital citizenship, balance) | ✅ L4 homework |
+| Comprehension Questions 1–8 | ✅ L4 reading check (Q1–7) + opinion questions (Q8) |
+| Eight extra words taken from the text (screen time, stay in touch, keep up with, endless scrolling, switch off, pressure, protect your personal information, artificial intelligence) | ✅ L4 |
+
 ## Travel_Vocabulary_Matching_Quiz.pdf
 The app builds its own matching quiz per lesson from these words, so the PDF quiz is not used directly. It can be used as a review test once all six sections are done.
 
@@ -29,4 +38,5 @@ The app builds its own matching quiz per lesson from these words, so the PDF qui
 - L1 Places that take your breath away (vocabulary)
 - L2 Ciao, Italia! (present perfect vs past simple, his Italy trip)
 - L3 Germany: what do you remember? (memories of his childhood road trip: Europa-Park, BMW + Mercedes museums, rental car, villages, nature; I remember + -ing, I expected… but…)
+- L4 Technology: your life on a screen (B2 reading lesson: the article, 16 words, opinion + reason + example, cause & result, polite disagreement; screen-time debate)
 - Still saved for later: his Barcelona trip
