@@ -47,7 +47,7 @@ function route() {
 function renderHome() {
   $app.innerHTML = `
     <section class="hero">
-      <p class="kicker">Now boarding · B1 → B2</p>
+      <p class="kicker">Now boarding · B1 → C1</p>
       <h1>Wander<span>words</span></h1>
       <p>Your English journey, one destination at a time. Choose your seat.</p>
     </section>
@@ -58,11 +58,11 @@ function renderHome() {
 }
 
 // A boarding-pass link: main part + tear-off stub.
-function pass(href, cls, label, title, sub, icon) {
+function pass(href, cls, label, title, sub, icon, from = "B1", to = "B2") {
   return `<a class="pass ${cls}" href="${href}">
     <div class="pass-main">
       <div class="pass-top"><span>${label}</span><span>WANDERWORDS AIR</span></div>
-      <div class="pass-route"><b>B1</b><span class="pass-line">✈</span><b>B2</b></div>
+      <div class="pass-route"><b>${from}</b><span class="pass-line">✈</span><b>${to}</b></div>
       <h2>${esc(title)}</h2><p>${esc(sub)}</p>
     </div>
     <div class="pass-stub"><div class="pass-icon">${icon}</div><div class="barcode"></div></div>
@@ -94,10 +94,10 @@ function renderList(role) {
   $app.innerHTML = `
     <p class="kicker">${role === "teacher" ? "Crew schedule" : "My trips"}</p>
     <h1 class="page">${role === "teacher" ? "Choose a flight" : "Where are we going?"}</h1>
-    <p class="lead">50-minute flights · B1 → B2. ${role === "student" ? `<a href="#/cards">Practise all words →</a>` : `${done.length}/${LESSONS.length} landed.`}</p>
+    <p class="lead">50-minute lessons · B1 → C1. ${role === "student" ? `<a href="#/cards">Practise all words →</a>` : `${done.length}/${LESSONS.length} landed.`}</p>
     <div class="home">
       ${LESSONS.map((l) => pass(`#/${role}/${l.n}`, done.includes(l.n) ? "done" : "", `FLIGHT WW-${String(l.n).padStart(3, "0")}`,
-        l.title, `${wordsOf(l).length} words · ${l.phases.length} gates · 50 min`, done.includes(l.n) ? "✅" : l.icon || "🌍")).join("")}
+        l.title, `${wordsOf(l).length} words · ${l.phases.length} gates · 50 min`, done.includes(l.n) ? "✅" : l.icon || "🌍", l.from, l.to)).join("")}
     </div>`;
 }
 
@@ -302,19 +302,19 @@ function renderStudentLesson(l) {
   const gates = [
     [...g("warmup", "Where would you rather be?", "Look at the two postcards. Choose one and say why."), warmupHtml(l)],
     l.reading && [...g("reading", "Reading", "Read once fast, then read again for details."), readingHtml(l)],
-    l.rules && ["Grammar check-in", "Read each card and the examples. Notice when we use each form.", rulesHtml(l)],
+    l.rules && [...g("rules", "Grammar check-in", "Read each card and the examples. Notice when we use each form."), rulesHtml(l)],
     [...g("words", "Pack your words", "Read the example on each luggage tag, guess the meaning, then tap the tag to check."), vocabHtml(l, true)],
-    l.drill && ["Fill the gaps", "Choose the right form for each sentence. Every right answer gets a stamp.", '<div id="drill"></div>'],
+    l.drill && [...g("drill", "Fill the gaps", "Choose the right form for each sentence. Every right answer gets a stamp."), '<div id="drill"></div>'],
     [...g("quiz", "Passport control", "Match each word to its meaning. Every right answer gets a stamp."), '<div id="quiz"></div>'],
     [...g("speak", "Tell me about a trip", "Answer out loud. Use at least 5 new words and talk for 30–60 seconds."), questionsHtml(l)],
-    ["Souvenir phrases", "Take these home and use them when you speak.", phrasesHtml(l)],
+    [l.labels?.phrases || "Souvenir phrases", "Take these home and use them when you speak.", phrasesHtml(l)],
   ].filter(Boolean);
   $app.innerHTML = `
     <section class="ticket">
       <div class="ticket-main">
         <div class="pass-top"><span>FLIGHT WW-${String(l.n).padStart(3, "0")}</span><span>BOARDING PASS</span></div>
         <h1>${esc(l.title)}</h1>
-        <div class="ticket-route"><div><small>FROM</small><b>B1</b></div><div class="pass-line">✈</div><div><small>TO</small><b>B2</b></div></div>
+        <div class="ticket-route"><div><small>FROM</small><b>${l.from || "B1"}</b></div><div class="pass-line">✈</div><div><small>TO</small><b>${l.to || "B2"}</b></div></div>
         <p>🎯 ${esc(l.goal)}</p>
       </div>
       <div class="ticket-stub"><div><small>DURATION</small><b>50 min</b></div><div><small>GATES</small><b>${gates.length}</b></div><div><small>WORDS</small><b>${wordsOf(l).length}</b></div></div>
@@ -329,7 +329,7 @@ function renderStudentLesson(l) {
     </div>
     <div class="box"><b>⚡ Challenge:</b> ${esc(l.challenge)}</div>
     <div class="box"><b>🏠 Homework:</b> ${esc(l.homework)}</div>
-    <h2>🃏 Postcard flashcards</h2><div id="cards"></div>
+    <h2>${l.labels?.cards || "🃏 Postcard flashcards"}</h2><div id="cards"></div>
     ${navLinks("student", l)}`;
 
   $app.querySelectorAll(".tag-card[role=button]").forEach((t) => {
@@ -400,11 +400,11 @@ function flashcards(root, words) {
           : `<div class="w">${esc(c.w)}</div><div class="muted">${esc(c.src)}</div>`}</div>
         <div class="fbtns"${flipped ? "" : " hidden"}><button class="again">✗ Again</button><button class="good">✓ Got it</button></div>
       </div>`;
-    root.querySelector(".card").onclick = () => { flipped = !flipped; draw(); };
+    root.querySelector(".card").onclick = () => { flipped = !flipped; draw(); root.querySelector(".card")?.focus({ preventScroll: true }); };
     root.querySelector(".card").onkeydown = (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), e.target.click());
     if (flipped) {
-      root.querySelector(".again").onclick = () => { grade(c.w, false); c.missed = true; deck.push(deck.shift()); flipped = false; draw(); };
-      root.querySelector(".good").onclick = () => { if (!c.missed) right++; grade(c.w, true); deck.shift(); flipped = false; draw(); };
+      root.querySelector(".again").onclick = () => { grade(c.w, false); c.missed = true; deck.push(deck.shift()); flipped = false; draw(); root.querySelector(".card")?.focus({ preventScroll: true }); };
+      root.querySelector(".good").onclick = () => { if (!c.missed) right++; grade(c.w, true); deck.shift(); flipped = false; draw(); root.querySelector(".card")?.focus({ preventScroll: true }); };
     }
   };
   draw();
