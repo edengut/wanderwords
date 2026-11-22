@@ -1,0 +1,231 @@
+/* Wanderwords theme: wright — frontier press (lesson 6)
+   Loaded after style.css; activated by body.wright. */
+/* ---------- Theme: frontier press (lesson 6, 1903) ----------
+   Aged newsprint on a walnut desk: sepia photographs with white borders,
+   wood-type headings, brass and oxblood stamps, ledger paper for the quiz.
+   Colour rule: paper surfaces are cream + ink; the only saturated colour is
+   oxblood (#8f3418) for action, brass (#c9a35a) for ornament. */
+body.wright {
+  --display: "Rye", "Alfa Slab One", Georgia, serif;
+  --body: "Bitter", Georgia, serif;
+  --mono: "Special Elite", "Courier New", monospace;
+  --paper: #f4e6c4; --paper2: #e8d4a8; --ink: #241509; --muted: #6a5233; --line: #c7a878;
+  --night: #2e1a0f; --deep: #3d2414; --dusk: #6a5233; --sun: #b5602a; --gold: #c9a35a;
+  --coral: #9b3b1e; --coral-ink: #8f3418; --sea: #4c5b3c; --ok: #3f6b3a; --bad: #8f2a1e;
+  --wood: #2e1a0f; --wood2: #3d2414; --brass: #c9a35a; --stamp: #8f3418; --cream: #f4e6c4;
+  /* Solid base + one fixed paper layer: no fixed attachment, no 1px stripe to shimmer while scrolling. */
+  background: #efe0bc;
+  position: relative;
+}
+.wright::after {
+  content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background:
+    radial-gradient(1100px 700px at 12% -12%, #ffffff66, transparent 62%),
+    radial-gradient(900px 620px at 104% 8%, #8a5a2a1f, transparent 62%),
+    radial-gradient(760px 520px at 50% 118%, #7a4a1a22, transparent 60%),
+    linear-gradient(180deg, #f8eed6 0, #f1e0ba 45vh, #e6d0a2 100%);
+}
+.wright header, .wright main { position: relative; z-index: 1; }
+html:has(body.wright) { background: #2e1a0f; }
+
+/* Header: walnut planks, brass badge */
+.wright header {
+  background:
+    repeating-linear-gradient(90deg, #00000000 0 84px, #00000055 84px 86px),
+    linear-gradient(180deg, #432816, #2a170c);
+  border-bottom: 4px solid var(--brass);
+  box-shadow: 0 4px 18px #0007;
+}
+.wright .logo { color: var(--cream); }
+.wright .logo-mark { background: radial-gradient(circle at 35% 30%, #ecd096, var(--brass) 70%); color: #2e1a0f; border-radius: 50%; box-shadow: inset 0 0 0 2px #7a5520, 0 2px 6px #0006; }
+.wright .board span { background: #1d110a; color: var(--brass); box-shadow: inset 0 -1px 0 #ffffff10; }
+.wright .board .board-k { color: #a08a6a; }
+
+/* Type on the cream page */
+.wright h1, .wright h2, .wright h3 { letter-spacing: 0; font-weight: 400; }
+.wright main > h1, .wright main > h2, .wright main > .lead, .wright main > .kicker, .wright main > p { color: var(--ink); }
+.wright main > h2 { text-shadow: none; border-bottom: 3px double var(--ink); padding-bottom: 6px; }
+.wright .kicker { color: var(--stamp); letter-spacing: .34em; border-bottom: 2px solid var(--stamp); display: inline-block; padding-bottom: 2px; }
+.wright h1.page { font-family: var(--display); font-size: clamp(2rem, 5vw, 3.1rem); text-transform: uppercase; line-height: 1.02; }
+.wright h3.group { font-family: var(--display); color: var(--stamp); font-size: .95rem; letter-spacing: .06em; text-transform: uppercase; }
+
+/* Buttons: letterpress blocks */
+.wright :is(button, .btn) {
+  border-radius: 2px; border: 2px solid #1d110a; background: linear-gradient(180deg, #a8451f, var(--stamp));
+  color: #fbf1d8; font-family: var(--mono); letter-spacing: .06em; text-transform: uppercase;
+  box-shadow: 3px 3px 0 #1d110a99; text-shadow: 0 1px 0 #0006;
+}
+.wright :is(button, .btn).ghost { background: #f8eed6; color: #241509; border-color: #241509; box-shadow: 3px 3px 0 #24150933; text-shadow: none; }
+.wright :is(button, .btn):hover { transform: translate(-1px, -1px); box-shadow: 5px 5px 0 #1d110a99; }
+.wright :is(button, .btn):active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #1d110a99; }
+.wright :is(a, button, .tag-card, .phase):focus-visible { outline: 3px solid var(--stamp); outline-offset: 3px; }
+
+/* Cover: the 1903 poster */
+.wright .ticket { border-radius: 2px; border: 4px double var(--ink); box-shadow: 9px 9px 0 #24150926, 0 20px 44px #0005; }
+.wright .ticket-main { background: linear-gradient(180deg, #fbf3dc, #efe0bc); padding: 30px 30px 40px; }
+.wright .ticket-main::before { height: 12px; background: linear-gradient(90deg, var(--stamp) 0 33.4%, var(--brass) 33.4% 66.7%, var(--wood) 66.7%); }
+.wright .ticket-main::after { content: "EST. 1903 · DAYTON, OHIO"; position: absolute; right: 20px; bottom: 12px; font: 700 .68rem var(--mono); letter-spacing: .22em; color: var(--stamp); opacity: .8; }
+.wright .ticket h1 { font-family: var(--display); text-transform: uppercase; font-size: clamp(2.1rem, 5.4vw, 3.5rem); line-height: 1.04; color: var(--ink); }
+.wright .ticket-main .pass-top { font-family: var(--mono); color: #6a5233; }
+.wright .ticket-route { margin-top: 14px; }
+.wright .ticket-route small { font-family: var(--mono); color: #6a5233; }
+.wright .ticket-route b { font-family: var(--display); color: var(--stamp); font-size: 2.9rem; }
+.wright .pass-line { color: var(--stamp); }
+.wright .ticket-main p { font-family: var(--body); }
+.wright .ticket-stub { background: linear-gradient(180deg, #e3caa0, #d9bd8c); border-left: 3px dashed #2e1a0f66; }
+.wright .ticket-stub b { font-family: var(--mono); color: #2e1a0f; }
+.wright .ticket-stub small { color: #6a5233; }
+
+/* Gates: wax seals on a dashed trail */
+.wright .gate::before { border-left: 3px dashed #8f341866; }
+.wright .gate-no {
+  border-radius: 50%; background: radial-gradient(circle at 34% 28%, #b8562b, var(--stamp) 62%, #6d2510);
+  color: #fbf1d8; border: 2px dashed #fbf1d8aa;
+  box-shadow: 0 0 0 4px #8f34181f, 4px 4px 0 #24150933;
+  font-family: var(--display);
+}
+.wright .gate-no b { font-family: var(--display); text-shadow: 0 1px 0 #0007; }
+.wright .gate-body {
+  border: 2px solid var(--ink); border-radius: 2px;
+  background:
+    radial-gradient(600px 300px at 100% 0%, #c9a35a1f, transparent 65%),
+    linear-gradient(180deg, #fcf4e0, #f3e6c8);
+  box-shadow: 7px 7px 0 #2415091f, 0 14px 32px #0004;
+}
+.wright .gate-body > h2 { font-family: var(--display); text-transform: uppercase; font-size: clamp(1.35rem, 3vw, 1.9rem); color: var(--ink); }
+.wright .gate-body > .lead { color: #5c4529; }
+
+/* Photographs: sepia prints with white borders */
+.wright .postcards { grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 24px; }
+.wright main > .postcards { background: #2415090a; border: 1px solid #2415091a; border-radius: 2px; }
+.wright .postcard { background: #fdf8ea; border: 1px solid #24150926; border-radius: 1px; padding: 10px 10px 12px; box-shadow: 0 8px 18px #0004, 0 1px 0 #ffffffcc inset; }
+.wright .postcard:nth-child(odd) { rotate: -2.4deg; }
+.wright .postcard:nth-child(even) { rotate: 2deg; }
+.wright .postcard { transition: transform .25s ease, rotate .25s ease; }
+.wright .postcard:hover { rotate: 0deg; transform: translateY(-5px); }
+.wright .pc-img { height: 190px; border-radius: 0; border: 1px solid #24150933; font-size: 52px; background: #efe2c2; }
+.wright .pc-img img { inset: 6px; width: calc(100% - 12px); height: calc(100% - 12px); filter: sepia(.45) contrast(1.06) brightness(.97) saturate(.8); object-fit: contain; transition: filter .45s, transform .45s; }
+.wright .postcard:hover .pc-img img { filter: sepia(.1) contrast(1.08) brightness(1); transform: scale(1.03); }
+.wright .postcard figcaption { font-family: var(--mono); font-size: .9rem; line-height: 1.4; color: #3f2a12; }
+.wright .pc-hand { font-family: var(--mono); color: var(--stamp); font-size: .82rem; letter-spacing: .08em; text-transform: uppercase; }
+.wright .pc-stamp { background: #efe1c0; border: 2px solid #24150955; outline: 1px solid #c9a35a; transform: rotate(-7deg); border-radius: 1px; }
+
+/* Word tags: krafts shipping labels */
+.wright .tag-card {
+  background: linear-gradient(180deg, #eddbb4, #e3cda0); border: 2px solid #2e1a0f; border-radius: 2px;
+  clip-path: none; box-shadow: 4px 4px 0 #2415092e; color: var(--ink); padding-top: 26px;
+}
+.wright .tag-card:hover { transform: translate(-1px, -2px); box-shadow: 6px 6px 0 #2415093d; }
+.wright .tag-card.open { background: linear-gradient(180deg, #fbf3dc, #f0e2c2); box-shadow: 4px 4px 0 var(--stamp); }
+.wright .tag-hole { background: #2e1a0f; width: 13px; height: 13px; margin-left: -6.5px; box-shadow: none; border: 2px solid #eddbb4; }
+.wright .tag-w { font-family: var(--display); font-size: 1.12rem; letter-spacing: .01em; }
+.wright .tag-e { font-family: var(--mono); font-style: normal; font-size: .84rem; color: #5c4529; }
+.wright .tag-m { border-top: 2px dashed #2e1a0f55; }
+.wright .tag-card.open .tag-m { color: #6d2510; }
+.wright .tag-m .tap { font-family: var(--mono); color: var(--stamp); }
+
+/* Rules: framed notices */
+.wright .rule { border: 2px solid var(--ink); border-left: 10px solid var(--stamp); border-radius: 2px; background: linear-gradient(180deg, #fbf3dc, #f2e4c4); box-shadow: 5px 5px 0 #2415091f; }
+.wright .rule h3 { font-family: var(--display); font-size: 1.1rem; text-transform: uppercase; color: var(--ink); }
+.wright .rule .form { background: linear-gradient(180deg, #3d2414, #2a170c); color: var(--brass); border-radius: 2px; font-family: var(--mono); }
+.wright .rule p { color: #3f2a12; }
+.wright .rule ul { color: #5c4529; }
+
+/* Quiz: ledger page */
+.wright .quiz.passport {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 34px, #8f34181a 34px 35px),
+    linear-gradient(180deg, #fbf3dc, #f2e4c4);
+  border: 2px solid var(--ink); border-radius: 2px; box-shadow: 6px 6px 0 #2415091f;
+}
+.wright .quiz .q { border-bottom: 1px dashed #8f34184d; }
+.wright .quiz select { background: #fdf8ea; border: 2px solid #2e1a0f66; border-radius: 2px; font-family: var(--mono); color: var(--ink); }
+.wright .quiz select:focus-visible { outline: 2px solid var(--stamp); outline-offset: 1px; }
+.wright .q.ok .stamp { color: var(--ok); border-color: var(--ok); }
+.wright .q.bad .stamp { color: var(--bad); border-color: var(--bad); }
+.wright .score { font-family: var(--display); }
+
+/* Questions and reporter's phrases */
+.wright .bubble { background: #fdf8ea; border: 2px solid #24150955; border-radius: 2px; box-shadow: 4px 4px 0 #2415091f; }
+.wright .bubble b { background: var(--stamp); color: #fbf1d8; border-radius: 50%; font-family: var(--display); }
+.wright .followups em { background: #ead7b0; color: #6d2510; border: 1px solid #24150940; border-radius: 2px; font-family: var(--mono); }
+.wright .phrase {
+  background: linear-gradient(180deg, #432816, #2a170c); color: #f6e8c8;
+  border: 2px solid #c9a35a66; border-radius: 2px; box-shadow: 3px 3px 0 #24150933;
+  font-family: var(--body); font-size: 1rem;
+}
+.wright .box { background: linear-gradient(180deg, #fbf3dc, #f2e4c4); border: 2px solid var(--ink); border-radius: 2px; box-shadow: 5px 5px 0 #2415091f; }
+.wright textarea { font-family: var(--mono); font-size: 1.02rem; background: repeating-linear-gradient(180deg, #fdf8ea 0 29px, #d9c194 29px 30px) 0 6px / 100% 30px local, #fdf8ea; border: 2px solid #24150955; border-radius: 2px; }
+.wright .task.checked span { color: #6a5233; }
+
+/* Reading: front-page clipping with a drop cap */
+.wright .reading {
+  background:
+    radial-gradient(700px 300px at 0% 0%, #c9a35a1a, transparent 60%),
+    linear-gradient(180deg, #fdf6e4, #f6ead0);
+  border: 2px solid var(--ink); border-top: 6px double var(--ink); border-bottom: 6px double var(--ink);
+  border-radius: 0; box-shadow: 5px 5px 0 #2415091f; padding: 22px 26px;
+}
+.wright .reading h3 { font-family: var(--display); text-transform: uppercase; text-align: center; font-size: clamp(1.3rem, 3vw, 1.7rem); color: var(--ink); letter-spacing: .04em; }
+.wright .reading h3::after { content: "☆ ★ ☆"; display: block; font-size: .8rem; letter-spacing: .6em; color: var(--stamp); margin-top: 6px; }
+.wright .reading p:first-of-type::first-letter {
+  float: left; font-family: var(--display); font-size: 3.3rem; line-height: .82;
+  padding: 6px 10px 0 0; color: var(--stamp);
+}
+
+/* Teacher: timer and lesson plan */
+.wright .timer { background: linear-gradient(180deg, #3a2213f2, #241509f7); border: 2px solid #c9a35a55; border-radius: 2px; box-shadow: 5px 5px 0 #0004; }
+.wright .timer .clock { font-family: var(--mono); color: var(--brass); }
+.wright .timer .pname { font-family: var(--mono); color: #f0dfb8; }
+.wright .timer .plane { color: var(--brass); text-shadow: 0 0 8px #c9a35a55; }
+.wright .bar span { background: #ffffff22; }
+.wright .bar span.past { background: #6d2510; }
+.wright .bar span.cur { background: var(--brass); }
+.wright .phase { background: #faf1d9; border: 2px solid #24150933; border-left: 8px solid #c9a35a; border-radius: 2px; box-shadow: 4px 4px 0 #2415091a; }
+.wright .phase h3 { font-family: var(--body); font-weight: 700; }
+.wright .phase h3 small { color: var(--stamp); font-family: var(--mono); }
+.wright .phase.cur { border-left-color: var(--stamp); box-shadow: 0 0 0 2px #8f341866, 4px 4px 0 #2415091a; }
+.wright .phase.past { border-left-color: #6a5233; }
+.wright .phase .stu { color: #5c4529; border-top: 1px dashed #24150940; }
+
+/* Flashcards: cabinet cards */
+.wright .flash > .muted { color: #3f2a12; }
+.wright .card {
+  border-radius: 2px; border: 12px solid #3d2414; outline: 1px solid #c9a35a;
+  background: linear-gradient(180deg, #fbf3dc, #efe0bc); color: var(--ink);
+  box-shadow: 0 18px 40px #0006, inset 0 0 0 2px #c9a35a55;
+}
+.wright .card::after { content: "WRIGHT BROS. · DAYTON"; color: var(--stamp); border-color: var(--stamp); border-radius: 0; font-family: var(--mono); }
+.wright .card .w { font-family: var(--display); color: var(--ink); }
+.wright .card .m { font-family: var(--body); color: #3f2a12; }
+.wright .card .e { font-family: var(--mono); color: #6a5233; }
+.wright .fbtns .again { background: var(--bad); }
+.wright .fbtns .good { background: var(--ok); }
+.wright .lightbox img { background: #fdf8ea; padding: 12px; border: 1px solid #24150933; }
+.wright .lightbox figcaption { font-family: var(--mono); color: #f6e8c8; }
+.wright .pc-zoom::after { content: "⌕"; background: #8f3418cc; border: 1px solid #fbf1d866; font-size: 17px; }
+
+/* Motion: poster unrolls, photos develop, stamps land */
+@keyframes wb-unroll { from { translate: 0 26px; scale: .985; } to { translate: 0 0; scale: 1; } }
+@keyframes wb-print { from { letter-spacing: .14em; } to { letter-spacing: 0; } }
+@keyframes wb-stamp-in { 0% { scale: 2.4; rotate: 16deg; } 70% { scale: .94; rotate: -5deg; } 100% { scale: 1; rotate: -2deg; } }
+@keyframes wb-drop { from { translate: 0 -22px; } to { translate: 0 0; } }
+@keyframes wb-drive { from { translate: -14px 0; } to { translate: 14px 0; } }
+@keyframes wb-flicker { 50% { opacity: .45; } }
+.wright .ticket { animation: wb-unroll .8s cubic-bezier(.2, .9, .3, 1.1) both; }
+.wright .ticket h1 { animation: wb-print .9s .15s cubic-bezier(.4, 0, .2, 1) both; }
+.wright .pass-line { display: inline-block; animation: wb-drive 1.6s ease-in-out 3 alternate both; }
+.wright .kicker { animation: wb-flicker 1.8s steps(1) 2; }
+.wright .gate-no { animation: wb-stamp-in .7s cubic-bezier(.3, 1.4, .5, 1) both; animation-timeline: view(); animation-range: entry 5% entry 55%; }
+.wright .reading p:first-of-type::first-letter { animation: wb-print .8s .2s both; }
+@media (prefers-reduced-motion: reduce) {
+  .wright * { animation: none !important; }
+  .wright .pc-img img { filter: sepia(.45) contrast(1.06) brightness(.97) saturate(.8); }
+}
+@media (max-width: 640px) {
+  /* no tilt on a narrow screen: a rotated full-width card wastes the measure */
+  .wright .postcard:nth-child(odd), .wright .postcard:nth-child(even) { rotate: 0deg; }
+  .wright .ticket-stub { border-left: 0; border-top: 3px dashed #2e1a0f66; }
+  .wright .pc-img { height: 150px; }
+  .wright .ticket-main::after { position: static; display: block; margin-top: 10px; }
+}

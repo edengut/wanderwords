@@ -18,7 +18,8 @@ const store = {
       return v !== null && typeof v === typeof d && Array.isArray(v) === Array.isArray(d) ? v : d;
     } catch { return d; }
   },
-  set: (k, v) => localStorage.setItem("travel:" + k, JSON.stringify(v)),
+  // Private mode or a full quota must not break the lesson; progress is best-effort.
+  set: (k, v) => { try { localStorage.setItem("travel:" + k, JSON.stringify(v)); } catch {} },
 };
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const lesson = (n) => LESSONS.find((l) => l.n === Number(n));
@@ -27,21 +28,81 @@ const shuffle = (a) => a.map((x) => [Math.random(), x]).sort((p, q) => p[0] - q[
 
 let timer = null;
 
-function route() {
+// Fonts a theme needs beyond the shared set in index.html. Loaded once, on first use.
+const THEME_FONTS = {
+  germany: "family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800",
+  future: "family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800",
+  wright: "family=Rye&family=Special+Elite&family=Bitter:wght@400;600;700",
+  seismic: "family=Archivo+Black&family=IBM+Plex+Mono:wght@400;600",
+  vice: "family=Audiowide&family=JetBrains+Mono:wght@400;700",
+};
+const loadedFonts = new Set();
+function loadThemeFonts(name) {
+  const spec = THEME_FONTS[name];
+  if (!spec || loadedFonts.has(name)) return;
+  loadedFonts.add(name);
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = `https://fonts.googleapis.com/css2?${spec}&display=swap`;
+  document.head.appendChild(link);
+}
+
+// Lesson bodies load on demand: data/index.js holds the menu, the decks and the word
+// lists (16 KB); data/lessons/lN.js holds one lesson's reading, tasks and phases.
+const bodyCache = new Map();
+function loadLessonBody(n) {
+  if (bodyCache.has(n)) return bodyCache.get(n);
+  const promise = new Promise((resolve, reject) => {
+    const script = document.createElement("script");
+    script.src = `data/lessons/l${n}.js`;
+    script.onload = () => {
+      const body = (window.LESSON_CONTENT || {})[n];
+      body ? resolve({ ...lesson(n), ...body }) : reject(new Error(`lesson ${n} has no body`));
+    };
+    script.onerror = () => reject(new Error(`could not load lesson ${n}`));
+    document.head.appendChild(script);
+  });
+  bodyCache.set(n, promise);
+  return promise;
+}
+
+let routeToken = 0;
+async function route() {
   clearInterval(timer?.tick);
   timer = null;
+  const token = ++routeToken;
   const [, role, a] = location.hash.replace(/^#/, "").split("/");
-  const teacher = sessionStorage.getItem("travel-teacher") === "1";
+  const teacher = (() => { try { return sessionStorage.getItem("travel-teacher") === "1"; } catch { return false; } })();
   $who.textContent = role === "teacher" ? "CREW" : role ? "PASSENGER" : "BOARDING";
   window.scrollTo(0, 0);
-  document.body.className = (a && ["teacher", "student"].includes(role) && lesson(a)?.theme) || "";
+  const theme = (a && ["teacher", "student"].includes(role) && lesson(a)?.theme) || "";
+  document.body.className = theme;
+  loadThemeFonts(theme);
   if (role === "teacher") {
     if (!teacher) return renderLogin();
-    return a ? renderTeacherLesson(lesson(a)) : renderList("teacher");
+    return a ? showLesson(a, "teacher", token) : renderList("teacher");
   }
-  if (role === "student") return a ? renderStudentLesson(lesson(a)) : renderList("student");
+  if (role === "student") return a ? showLesson(a, "student", token) : renderList("student");
   if (role === "cards") return renderAllCards();
   renderHome();
+}
+
+// Show one lesson: paint a light header, fetch the body, then render the full view.
+async function showLesson(n, role, token) {
+  const stub = lesson(n);
+  if (!stub) return renderList(role);
+  $app.innerHTML = `<p class="kicker">Flight WW-${String(stub.n).padStart(3, "0")}</p>
+    <h1 class="page">${esc(stub.title)}</h1>
+    <p class="lead">Loading the lesson…</p>`;
+  try {
+    const full = await loadLessonBody(stub.n);
+    if (token !== routeToken) return; // the user moved on while it was loading
+    role === "teacher" ? renderTeacherLesson(full) : renderStudentLesson(full);
+  } catch (err) {
+    if (token !== routeToken) return;
+    $app.innerHTML = `<div class="box"><b>This lesson could not be loaded.</b><br>${esc(err.message)}</div>
+      <div class="row" style="margin-top:12px"><a class="btn ghost" href="#/${role}">← All flights</a></div>`;
+  }
 }
 
 function renderHome() {
@@ -83,21 +144,28 @@ function renderLogin() {
   form.onsubmit = (e) => {
     e.preventDefault();
     if (btoa(form.querySelector("input").value.trim().toLowerCase()) === TEACHER_PASS) {
-      sessionStorage.setItem("travel-teacher", "1");
+      try { sessionStorage.setItem("travel-teacher", "1"); } catch {}
       route();
     } else form.querySelector(".err").textContent = "Access denied: wrong password";
   };
 }
 
 function renderList(role) {
-  const done = store.get("done", []);
+  // A lesson is landed when the data says so (data/index.js `done: true`) or when this
+  // device ticked it on the lesson page. The data flag is what every device sees.
+  // Landed is a data fact, not device state: data/index.js carries done: true.
+  const landedSet = new Set(LESSONS.filter((l) => l.done).map((l) => l.n));
+  const landed = (n) => landedSet.has(n);
+  const count = landedSet.size;
   $app.innerHTML = `
     <p class="kicker">${role === "teacher" ? "Crew schedule" : "My trips"}</p>
     <h1 class="page">${role === "teacher" ? "Choose a flight" : "Where are we going?"}</h1>
-    <p class="lead">50-minute lessons · B1 → C1. ${role === "student" ? `<a href="#/cards">Practise all words →</a>` : `${done.length}/${LESSONS.length} landed.`}</p>
+    <p class="lead">50-minute lessons · B1 → C1. ${role === "student"
+      ? `<a href="#/cards">Practise all words →</a>`
+      : `${count}/${LESSONS.length} landed.`}</p>
     <div class="home">
-      ${LESSONS.map((l) => pass(`#/${role}/${l.n}`, done.includes(l.n) ? "done" : "", `FLIGHT WW-${String(l.n).padStart(3, "0")}`,
-        l.title, `${wordsOf(l).length} words · ${l.phases.length} gates · 50 min`, done.includes(l.n) ? "✅" : l.icon || "🌍", l.from, l.to)).join("")}
+      ${LESSONS.map((l) => pass(`#/${role}/${l.n}`, landed(l.n) ? "done" : "", `FLIGHT WW-${String(l.n).padStart(3, "0")}`,
+        l.title, `${wordsOf(l).length} words · ${l.phaseCount || 0} gates · 50 min`, landed(l.n) ? "✅" : l.icon || "🌍", l.from, l.to)).join("")}
     </div>`;
 }
 
@@ -112,10 +180,22 @@ function navLinks(role, l) {
 
 // ---------- Shared lesson blocks ----------
 
-const warmupHtml = (l) => `<div class="postcards">${l.warmup.map((p, i) => `
-  <figure class="postcard p${i}"><div class="pc-img">${p.icon}</div>
+// A photo frame that opens the full-screen viewer on tap.
+const photoFrame = (src, caption, credit) => `<div class="pc-img pc-zoom" tabindex="0" role="button" aria-label="Enlarge photo: ${esc(caption)}" data-photo="${esc(src)}" data-caption="${esc(caption)}"${credit ? ` data-credit="${esc(credit)}"` : ""}><img src="${esc(src)}" alt="" loading="lazy"></div>`;
+
+// A warm-up card: a photo (tappable to enlarge) or an emoji scene, plus its caption.
+function warmupCard(p, i) {
+  return `<figure class="postcard p${i}">
+    ${p.img ? photoFrame(p.img, p.caption, p.credit) : `<div class="pc-img">${p.icon}</div>`}
     <figcaption><span class="pc-hand">Greetings from…</span>${esc(p.caption)}</figcaption>
-    <div class="pc-stamp">${p.stamp || (i ? "🐚" : "🏛️")}</div></figure>`).join("")}</div>`;
+    <div class="pc-stamp">${p.stamp || (i ? "🐚" : "🏛️")}</div></figure>`;
+}
+const warmupHtml = (l) => `<div class="postcards">${l.warmup.map(warmupCard).join("")}</div>`;
+
+// A case-study story: real events told as a narrative, with photographs.
+const storyHtml = (l) => `<div class="reading story"><h3>${esc(l.story.title)}</h3>
+  ${l.story.paragraphs.map((p) => `<p>${esc(p)}</p>`).join("")}
+  ${l.story.photos ? `<div class="story-photos">${l.story.photos.map((p) => `<figure class="story-photo">${photoFrame(p.img, p.caption, p.credit)}<figcaption>${esc(p.caption)}</figcaption></figure>`).join("")}</div>` : ""}</div>`;
 
 // A numbered stop on the lesson's route.
 const gate = (n, title, sub, body) => `<section class="gate">
@@ -139,6 +219,21 @@ const questionsHtml = (l) => (qn = 0, l.questions.map((s) => `
   + `<div class="followups"><span>Keep going:</span>${l.followups.map((f) => `<em>${esc(f)}</em>`).join("")}</div>`);
 
 const phrasesHtml = (l) => `<div class="phrases">${l.phrases.map((p) => `<div class="phrase">💬 ${esc(p)}</div>`).join("")}</div>`;
+
+// Listening: the teacher reads the script aloud; the browser voice is the fallback.
+// The transcript stays hidden until he has answered, so he listens first.
+// Listening uses a real recording of the teacher, never a synthetic voice.
+// Without a recording the gate asks the teacher to read the script aloud herself.
+const listenHtml = (l) => `<div class="listen">
+  ${l.listen.audio
+    ? `<audio controls preload="metadata" src="${esc(l.listen.audio)}"></audio>
+       <p class="muted listen-meta">${l.listen.seconds ? `about ${l.listen.seconds} seconds · ` : ""}listen once, without the transcript</p>`
+    : `<p class="listen-meta">🎧 Your teacher reads this aloud. Put the phone down and listen.</p>`}
+  <ol class="listen-qs">${l.listen.questions.map((q) => `<li>${esc(q)}</li>`).join("")}</ol>
+  <details class="listen-script"><summary>Show the transcript — only after you have answered</summary>
+    ${l.listen.script.map((p) => `<p>${esc(p)}</p>`).join("")}
+  </details>
+</div>`;
 
 const readingHtml = (l) => `<div class="reading"><h3>${esc(l.reading.title)}</h3>
   ${l.reading.paragraphs.map((p) => `<p>${esc(p)}</p>`).join("")}</div>`;
@@ -174,18 +269,19 @@ const matchSections = (l) => l.groups.map((g) => {
   return { name: g.name, items: g.words.map(([w, m]) => [w, m, opts]) };
 });
 const drillSections = (l) => [{ items: l.drill.map(([q, opts, a]) => [q, a, shuffle(opts)]) }];
+// Key-word transformations: the prompt keeps the source sentence, the options are full rewrites.
+const transformSections = (l) => [{ items: l.transform.map(([q, opts, a]) => [q, a, shuffle(opts)]) }];
 
 const rulesHtml = (l) => `<div class="rules">${l.rules.map((r) => `
   <div class="rule"><h3>${esc(r.title)}</h3><div class="form">${esc(r.form)}</div><p>${esc(r.use)}</p>
     <ul>${r.ex.map((e) => `<li>${esc(e)}</li>`).join("")}</ul></div>`).join("")}</div>`;
 
-const drillKeyHtml = (l) => `<ol class="box">${l.drill.map(([q, , a]) => `<li>${esc(q)} → <b>${esc(a)}</b></li>`).join("")}</ol>`;
+const answerKey = (items) => `<ol class="box">${items.map(([q, , a]) => `<li>${esc(q)} → <b>${esc(a)}</b></li>`).join("")}</ol>`;
 
 // ---------- Teacher ----------
 
 function renderTeacherLesson(l) {
   if (!l) return renderList("teacher");
-  const done = store.get("done", []);
   const notes = store.get("notes", {});
   const best = store.get("quiz", {})[l.n];
   $app.innerHTML = `
@@ -209,8 +305,11 @@ function renderTeacherLesson(l) {
       </div>`).join("")}
     <h2>Warm-up postcards</h2>${warmupHtml(l)}
     ${l.reading ? `<h2>Reading text</h2>${readingHtml(l)}` : ""}
+    ${l.story ? `<h2>Case study story</h2>${storyHtml(l)}` : ""}
+    ${l.listen ? `<h2>Listening script</h2><div class="box">${l.listen.script.map((p) => `<p>${esc(p)}</p>`).join("")}</div>` : ""}
     ${l.rules ? `<h2>Grammar</h2>${rulesHtml(l)}` : ""}
-    ${l.drill ? `<h2>Gap-fill answers</h2>${drillKeyHtml(l)}` : ""}
+    ${l.drill ? `<h2>Gap-fill answers</h2>${answerKey(l.drill)}` : ""}
+    ${l.transform ? `<h2>Transformation answers</h2>${answerKey(l.transform)}` : ""}
     <h2>Words (${wordsOf(l).length})</h2>${vocabHtml(l, false)}
     <h2>Questions</h2>${questionsHtml(l)}
     <h2>Useful phrases</h2>${phrasesHtml(l)}
@@ -218,20 +317,13 @@ function renderTeacherLesson(l) {
     <div class="box"><b>🏠 Homework:</b> ${esc(l.homework)}</div>
     <h2>Flight log</h2>
     <textarea placeholder="Errors to revisit, words he used, what to change…">${esc(notes[l.n] || "")}</textarea>
-    <div class="row" style="margin-top:12px">
-      <label class="task"><input type="checkbox" id="done" ${done.includes(l.n) ? "checked" : ""}><span>Landed (lesson done)</span></label>
-    </div>
+    ${l.done ? `<div class="box"><b>✅ Landed.</b> Set by <code>done: true</code> in <code>data/index.js</code>.</div>` : ""}
     ${navLinks("teacher", l)}`;
 
   $app.querySelector("textarea").oninput = (e) => {
     const all = store.get("notes", {});
     all[l.n] = e.target.value;
     store.set("notes", all);
-  };
-  $app.querySelector("#done").onchange = (e) => {
-    const d = new Set(store.get("done", []));
-    e.target.checked ? d.add(l.n) : d.delete(l.n);
-    store.set("done", [...d]);
   };
   startTimer(l);
 }
@@ -302,9 +394,12 @@ function renderStudentLesson(l) {
   const gates = [
     [...g("warmup", "Where would you rather be?", "Look at the two postcards. Choose one and say why."), warmupHtml(l)],
     l.reading && [...g("reading", "Reading", "Read once fast, then read again for details."), readingHtml(l)],
+    l.story && [...g("story", "Case study", "Read the story. What exactly happened, and why?"), storyHtml(l)],
+    l.listen && [...g("listen", "Listening", "Put the phone down and listen once. Then answer, and only then open the transcript."), listenHtml(l)],
     l.rules && [...g("rules", "Grammar check-in", "Read each card and the examples. Notice when we use each form."), rulesHtml(l)],
     [...g("words", "Pack your words", "Read the example on each luggage tag, guess the meaning, then tap the tag to check."), vocabHtml(l, true)],
     l.drill && [...g("drill", "Fill the gaps", "Choose the right form for each sentence. Every right answer gets a stamp."), '<div id="drill"></div>'],
+    l.transform && [...g("transform", "Rewrite it", "Same meaning, new shape. Choose the rewrite that keeps the meaning."), '<div id="transform"></div>'],
     [...g("quiz", "Passport control", "Match each word to its meaning. Every right answer gets a stamp."), '<div id="quiz"></div>'],
     [...g("speak", "Tell me about a trip", "Answer out loud. Use at least 5 new words and talk for 30–60 seconds."), questionsHtml(l)],
     [l.labels?.phrases || "Souvenir phrases", "Take these home and use them when you speak.", phrasesHtml(l)],
@@ -344,6 +439,7 @@ function renderStudentLesson(l) {
   }));
   quiz($app.querySelector("#quiz"), matchSections(l), l.n);
   if (l.drill) quiz($app.querySelector("#drill"), drillSections(l), `${l.n}-drill`);
+  if (l.transform) quiz($app.querySelector("#transform"), transformSections(l), `${l.n}-transform`);
   const review = LESSONS.filter((x) => x.n < l.n).flatMap(cardsFor).filter((x) => studied(x) && isDue(x)).slice(0, 10);
   flashcards($app.querySelector("#cards"), [...cardsFor(l), ...review]);
 }
@@ -409,6 +505,43 @@ function flashcards(root, words) {
   };
   draw();
 }
+
+// Tap a postcard photo to open it full-screen; tap again (or press Esc) to close.
+function openPhoto(src, caption, credit) {
+  if (document.querySelector(".lightbox")) return;
+  const opener = document.activeElement;
+  const box = document.createElement("div");
+  box.className = "lightbox";
+  box.setAttribute("role", "dialog");
+  box.setAttribute("aria-modal", "true");
+  box.setAttribute("aria-label", caption || "Photo");
+  box.tabIndex = -1;
+  box.innerHTML = `<button class="lb-close" type="button" aria-label="Close photo">✕</button>
+    <figure><img src="${esc(src)}" alt=""><figcaption>${esc(caption)}<span>${credit ? `${esc(credit)} · ` : ""}TAP OR CLICK TO CLOSE</span></figcaption></figure>`;
+  const close = () => {
+    if (!box.isConnected) return;
+    box.remove();
+    document.documentElement.classList.remove("zoomed");
+    document.removeEventListener("keydown", onKey);
+    if (opener && opener.focus) opener.focus({ preventScroll: true });
+  };
+  const onKey = (e) => e.key === "Escape" && close();
+  box.onclick = close; // tap anywhere, including the photo, closes it
+  document.addEventListener("keydown", onKey);
+  document.documentElement.classList.add("zoomed");
+  document.body.appendChild(box);
+  box.querySelector(".lb-close").focus({ preventScroll: true });
+}
+
+document.addEventListener("click", (e) => {
+  const z = e.target.closest && e.target.closest(".pc-zoom");
+  if (z && z.dataset.photo) { e.preventDefault(); openPhoto(z.dataset.photo, z.dataset.caption, z.dataset.credit); }
+});
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+  const z = document.activeElement && document.activeElement.closest && document.activeElement.closest(".pc-zoom");
+  if (z && z.dataset.photo) { e.preventDefault(); openPhoto(z.dataset.photo, z.dataset.caption, z.dataset.credit); }
+});
 
 // Start last, so every const above is defined before the first render.
 window.addEventListener("hashchange", route);

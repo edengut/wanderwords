@@ -1,0 +1,31 @@
+/* Wanderwords theme: italia — sunset over Italy (lesson 2)
+   Loaded after style.css; activated by body.italia. */
+/* ---------- Theme: Colors of Italy (lesson 2) ---------- */
+body.italia {
+  --coral-ink: #cc3f18;
+  --night: #1f3f42; --deep: #468588; --dusk: #8ca79a; --sun: #cc3f18; --gold: #eeaf42; --coral: #cc3f18; --sea: #468588;
+  --paper: #fdf8ee; --paper2: #eef3e6; --line: #d9e3cf;
+  background: linear-gradient(180deg, #1f3f42 0, #468588 35vh, #8ca79a 80vh, #b9d39f 130vh, #eeaf42 190vh, #cc3f18 260vh);
+  background-attachment: fixed;
+}
+.italia .pc-hand { color: #cc3f18; }
+.italia .p0 .pc-img { background: linear-gradient(160deg, #b9d39f, #468588 70%, #1f3f42); }
+.italia .p1 .pc-img { background: linear-gradient(160deg, #eeaf42, #cc3f18); }
+.italia .p2 .pc-img { background: linear-gradient(160deg, #8ca79a, #1f3f42); }
+.italia .p3 .pc-img { background: linear-gradient(160deg, #eeaf42, #468588); }
+.italia .ticket-main::before { background: linear-gradient(90deg, #468588 0 33%, #fdf8ee 33% 66%, #cc3f18 66%); }
+.italia .postcards { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+.italia .tag-card { background: linear-gradient(180deg, #f3f8ea, #dbe9c9); }
+.italia .tag-card.open { background: linear-gradient(180deg, #fdebc6, #eeaf42); box-shadow: 0 4px 0 #c98d26; }
+.italia .tag-card.open .tag-m { color: #1f3f42; }
+.italia .rule { border-left-color: #cc3f18; }
+.italia .rule .form { background: #eef3e6; color: #1f3f42; }
+.italia .bubble b { background: #2f6a6d; }
+.italia .followups em { background: #fdebc6; color: #a8320f; }
+.italia .phrase { background: linear-gradient(135deg, #fff, #eef3e6); }
+.italia .p4 .pc-img { background: linear-gradient(160deg, #b9d39f, #eeaf42); }
+.italia .p5 .pc-img { background: linear-gradient(160deg, #468588, #cc3f18); }
+.postcard figcaption { padding-right: 56px; }
+.italia .logo-mark { color: #fff; }
+html:has(body.italia) { background: #1f3f42; }
+main > p.muted { color: #c3c8e6; }

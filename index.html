@@ -7,8 +7,17 @@
   <title>Wanderwords · English journeys</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✈️</text></svg>">
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Space+Mono:wght@400;700&family=Caveat:wght@600&family=Inter:wght@400;600&display=swap">
+  <!-- Shared faces only; each lesson theme pulls its own faces on demand (see themeFonts in app.js). -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Space+Mono:wght@400;700&family=Caveat:wght@600&family=Inter:wght@400;600&display=swap">
   <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="themes/italia.css">
+  <link rel="stylesheet" href="themes/germany.css">
+  <link rel="stylesheet" href="themes/tech.css">
+  <link rel="stylesheet" href="themes/future.css">
+  <link rel="stylesheet" href="themes/wright.css">
+  <link rel="stylesheet" href="themes/seismic.css">
+  <link rel="stylesheet" href="themes/vice.css">
+  <script src="data/index.js"></script>
 </head>
 <body>
   <header>
@@ -16,7 +25,6 @@
     <div class="board"><span class="board-k">STATUS</span><span id="who"></span></div>
   </header>
   <main id="app"></main>
-  <script src="data/lessons.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

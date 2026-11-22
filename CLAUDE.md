@@ -1,9 +1,18 @@
 # Wanderwords: rules for adding a lesson
 
-- Add the lesson as a new object in `data/lessons.js` (next `n`). Phases must add up to 50 minutes.
+- Content is split: `data/index.js` holds the menu entry + word lists (loaded always); `data/lessons/l<N>.js` holds the body (reading, tasks, phases) and loads only when that lesson opens. Adding a lesson = one index entry + one body file.
+- Phases must add up to 50 minutes.
 - Every lesson's words go in its `groups` (`[word, meaning, example]`), grammar lessons too (verb forms, time words). That is what puts them on the practice page.
 - After each lesson, check `#/cards`: "All words" must include every word from every lesson so far, and the new lesson must have its own deck button. Never hard-code deck lists; they come from `LESSONS`.
 - Make the content personal to the student (his real trips and interests), not generic.
-- A lesson can have its own `theme` (a body class in `style.css`, like `italia`).
-- Before pushing: `python3 -m http.server 8765`, then check `/`, `/#/student/N`, `/#/teacher/N` and `/#/cards` with no console errors.
+- Whether a lesson is landed is a data fact, not device state: `done: true` on the lesson in `data/index.js`. There is no UI for it and no localStorage key — the developer sets it when a lesson is taught. localStorage holds only live practice state: task ticks, quiz scores, flashcard boxes and the teacher flight log, all per device.
+- A lesson can have its own `theme`: a body class (`italia`, `germany`, `tech`, `future`, `wright`, `seismic`, `vice`). Theme CSS lives in its own file, `themes/<theme>.css`, linked after `style.css` in `index.html`. Never edit another lesson's theme. Fonts beyond the shared set go in `THEME_FONTS` in `app.js`, not in `index.html`.
+- L1 has no `theme` on purpose: it uses the shared base design in `style.css`.
+- Scroll safety: no `backdrop-filter`, no `background-attachment: fixed` in new themes (use a fixed `::before`/`::after` layer with z-index 0 and content at 1), and scroll-timeline keyframes must animate transforms only, never opacity. Blur plus opacity-on-scroll is what makes pages flicker on fast scroll.
+- All animation must be finite (no `infinite`): a 50-minute lesson runs on a phone, and a never-ending animation drains the battery and hides layout regressions.
+- `warmup[]` items may add `img` (a path under `img/`); the postcard then shows the photo, and tapping it opens a full-screen viewer (tap again or Esc closes). Keep photos public-domain or CC0 and under ~250 KB; add `credit` (shown in the full-screen viewer) when the source asks for it.
+- A lesson may add `transform: [[prompt, options, answer]]` for key-word transformations (C1 rewriting). It renders as its own student gate and a separate teacher answer key. Use it in every C1 lesson so the skill recurs.
+- A lesson may add `listen: { audio, seconds, script: [paragraphs], questions: [strings] }`. Audio is always a recording of the teacher reading the script - never a synthetic voice. The teacher page already prints the script, so record from there (Voice Memos or QuickTime), then: `ffmpeg -i recording.m4a -codec:a aac -b:a 48k -ac 1 -ar 22050 audio/<name>.m4a`, under ~400 KB. With no file the gate tells him the teacher will read it aloud. The transcript stays hidden until he has answered.
+- A lesson may add `story: { title, paragraphs, photos: [{img, caption}] }` for a case study (real events, told as a story). It renders as its own student gate after the reading, and on the teacher page under "Case study story". Use it when a fact needs explaining, not just naming.
+- Before pushing: `node tools/validate-lessons.js` (data contract: 50 minutes, answers among options, files exist, no duplicate words), then `python3 serve.py <free port>` (keep-alive; `http.server` resets image requests on photo-heavy pages), then `node tools/check-site.js` (every file the site needs returns 200 and is non-empty), then check `/`, `/#/student/N`, `/#/teacher/N` and `/#/cards` with no console errors.
 - After adding a lesson, update `COVERAGE.md` (what's used from Eden's PDFs).

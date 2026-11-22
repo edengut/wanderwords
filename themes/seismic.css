@@ -1,0 +1,194 @@
+/* Wanderwords theme: seismic — public-safety bulletin (lesson 7)
+   Loaded after style.css; activated by body.seismic.
+   Concrete paper, steel panels, hazard yellow and alert red. Big stencil
+   headings, monospaced data labels, a seismogram strip that never sits still. */
+body.seismic {
+  --display: "Archivo Black", "Bricolage Grotesque", system-ui, sans-serif;
+  --body: "Inter", system-ui, -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, Menlo, monospace;
+  --paper: #f4f2ea; --paper2: #e6e3d8; --ink: #14161a; --muted: #5b616b; --line: #c9c6ba;
+  --night: #14161a; --deep: #2b3038; --dusk: #5b616b; --sun: #f5c518; --gold: #f5c518;
+  --coral: #d92b2b; --coral-ink: #b32323; --sea: #1f7a8c; --ok: #1f7a4a; --bad: #c62828;
+  --steel: #2b3038; --concrete: #d9d5ca; --hazard: #f5c518; --alert: #d92b2b;
+  background:
+    radial-gradient(900px 520px at 88% -12%, #f5c51822, transparent 62%),
+    radial-gradient(700px 420px at -8% 108%, #d92b2b12, transparent 60%),
+    repeating-linear-gradient(90deg, #00000007 0 1px, transparent 1px 96px),
+    repeating-linear-gradient(0deg, #00000007 0 1px, transparent 1px 96px),
+    linear-gradient(180deg, #f6f4ee 0, #e9e6dc 60vh, #ddd8cb 100%);
+  background-attachment: fixed;
+}
+html:has(body.seismic) { background: #14161a; }
+.seismic :is(.ticket, .gate-no, .gate-body, .postcard, .pc-stamp, .tag-card, .bubble, .phrase, .kicker, .btn, button, .box, .rule, .phase) {
+  outline: 1px solid transparent; backface-visibility: hidden;
+}
+
+/* Header: steel panel under a hazard tape */
+.seismic header {
+  background: linear-gradient(180deg, #343a44, #1b1f25);
+  border-bottom: 8px solid;
+  border-image: repeating-linear-gradient(45deg, var(--hazard) 0 14px, #14161a 14px 28px) 8;
+  box-shadow: 0 4px 16px #0007;
+}
+.seismic .logo { color: #f4f2ea; }
+.seismic .logo-mark { background: var(--hazard); color: #14161a; border-radius: 4px; transform: none; box-shadow: inset 0 0 0 2px #14161a; }
+.seismic .board span { background: #0d0f12; color: var(--hazard); }
+.seismic .board .board-k { color: #9aa1ab; }
+
+/* Type */
+.seismic h1, .seismic h2, .seismic h3 { letter-spacing: -.01em; font-weight: 400; }
+.seismic main > h1, .seismic main > h2, .seismic main > .lead, .seismic main > .kicker, .seismic main > p { color: var(--ink); }
+.seismic main > h2 { text-shadow: none; text-transform: uppercase; font-size: 1.3rem; border-bottom: 4px solid var(--ink); padding-bottom: 6px; }
+.seismic .kicker { color: var(--coral-ink); letter-spacing: .3em; }
+.seismic .kicker::before { content: "● "; color: var(--alert); animation: sq-pulse 1.6s ease-in-out 4; }
+.seismic h1.page { font-family: var(--display); font-size: clamp(2rem, 5vw, 3rem); text-transform: uppercase; line-height: 1; letter-spacing: -.02em; }
+.seismic h3.group { font-family: var(--mono); color: var(--ink); font-size: .78rem; letter-spacing: .18em; text-transform: uppercase; border-left: 6px solid var(--hazard); padding-left: 8px; }
+
+/* Buttons: hazard controls */
+.seismic :is(button, .btn) {
+  border-radius: 6px; border: 2px solid #14161a; background: var(--hazard); color: #14161a;
+  font-family: var(--mono); font-size: .9rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+  box-shadow: 0 3px 0 #14161a; text-shadow: none;
+}
+.seismic :is(button, .btn).ghost { background: #f4f2ea; color: #14161a; box-shadow: 0 3px 0 #14161a55; }
+.seismic :is(button, .btn):hover { transform: translateY(-1px); box-shadow: 0 4px 0 #14161a; }
+.seismic :is(button, .btn):active { transform: translateY(2px); box-shadow: 0 1px 0 #14161a; }
+.seismic :is(a, button, .tag-card, .phase):focus-visible { outline: 3px solid var(--coral-ink); outline-offset: 3px; }
+
+/* Cover: emergency bulletin */
+.seismic .ticket { border-radius: 4px; border: 2px solid var(--ink); box-shadow: 8px 8px 0 #14161a1f, 0 20px 44px #0004; overflow: hidden; }
+.seismic .ticket-main { background: #fbfaf5; padding: 26px 30px 26px 44px; }
+.seismic .ticket-main::before { inset: 0 auto 0 0; width: 14px; height: auto; background: repeating-linear-gradient(135deg, var(--hazard) 0 12px, #14161a 12px 24px); animation: sq-drift 6s linear 1 both; }
+.seismic .ticket-main .pass-top { font-family: var(--mono); color: var(--muted); letter-spacing: .12em; }
+.seismic .ticket h1 { font-family: var(--display); text-transform: uppercase; font-size: clamp(1.9rem, 4.6vw, 3.1rem); line-height: 1; color: var(--ink); }
+.seismic .ticket-route small { font-family: var(--mono); color: var(--muted); }
+.seismic .ticket-route b { font-family: var(--display); color: var(--coral-ink); }
+.seismic .pass-line { color: var(--alert); }
+.seismic .ticket-stub { background: #2b3038; border-left: 0; color: #f4f2ea; }
+.seismic .ticket-stub small { color: #9aa1ab; }
+.seismic .ticket-stub b { font-family: var(--mono); color: var(--hazard); }
+
+/* Gates: hazard placards */
+.seismic .gate::before { border-left: 3px solid #14161a33; }
+.seismic .gate-no {
+  border-radius: 4px; background: #14161a; color: var(--hazard); border: 3px solid var(--hazard);
+  box-shadow: 4px 4px 0 #14161a33; font-family: var(--mono);
+}
+.seismic .gate-no span { letter-spacing: .18em; }
+.seismic .gate-no b { font-family: var(--display); }
+.seismic .gate-body {
+  border: 2px solid var(--ink); border-top: 8px solid var(--ink); border-radius: 4px;
+  background: #fbfaf5; box-shadow: 6px 6px 0 #14161a1f;
+}
+.seismic .gate-body > h2 { font-family: var(--display); text-transform: uppercase; font-size: clamp(1.3rem, 2.8vw, 1.8rem); }
+.seismic .gate-body > .lead { color: #4c525c; }
+
+/* Warm-up cards: incident photos */
+.seismic .postcards { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+.seismic main > .postcards { background: #14161a08; border: 1px solid #14161a1a; border-radius: 4px; }
+.seismic .postcard { background: #fff; border: 2px solid var(--ink); border-radius: 2px; padding: 10px 10px 12px; box-shadow: 0 6px 16px #0003; transform: none; transition: transform .2s; }
+.seismic .postcard:hover { transform: translateY(-4px); }
+.seismic .pc-img img { object-fit: contain; }
+.seismic .pc-img { height: 170px; border-radius: 0; background: linear-gradient(160deg, #d9d5ca, #b9b4a6); border: 1px solid #14161a26; border-left: 6px solid var(--hazard); font-size: 46px; letter-spacing: 2px; }
+.seismic .postcard figcaption { font-family: var(--body); font-size: .95rem; color: #2b3038; }
+.seismic .pc-hand { font-family: var(--mono); color: var(--coral-ink); font-size: .72rem; text-transform: uppercase; letter-spacing: .12em; }
+.seismic .pc-stamp { background: #14161a; color: var(--hazard); border: 2px solid var(--hazard); border-radius: 50%; transform: rotate(-8deg); }
+
+/* Vocabulary: data cards */
+.seismic .tag-card {
+  background: #fff; border: 2px solid var(--ink); border-left: 8px solid var(--hazard); border-radius: 4px;
+  clip-path: none; box-shadow: 3px 3px 0 #14161a1f; color: var(--ink); padding-top: 22px;
+}
+.seismic .tag-card:hover { transform: translate(-1px, -2px); box-shadow: 5px 5px 0 #14161a2e; }
+.seismic .tag-card.open { background: #fffbe8; border-left-color: var(--alert); box-shadow: 3px 3px 0 var(--alert); }
+.seismic .tag-hole { background: #14161a; width: 10px; height: 10px; margin-left: -5px; box-shadow: none; }
+.seismic .tag-w { font-family: var(--display); font-size: 1.05rem; text-transform: uppercase; letter-spacing: -.01em; }
+.seismic .tag-e { font-family: var(--mono); font-style: normal; font-size: .8rem; color: #4c525c; }
+.seismic .tag-m { border-top: 2px solid #14161a22; }
+.seismic .tag-m .tap { font-family: var(--mono); color: var(--coral-ink); }
+.seismic .tag-card.open .tag-m { color: #14161a; }
+
+/* Rules: instruction cards */
+.seismic .rule { border: 2px solid var(--ink); border-left: 10px solid #14161a; border-radius: 2px; background: #fff; box-shadow: 4px 4px 0 #14161a1f; }
+.seismic .rule h3 { font-family: var(--display); font-size: 1.02rem; text-transform: uppercase; }
+.seismic .rule .form { background: #14161a; color: var(--hazard); border-radius: 2px; font-family: var(--mono); }
+.seismic .rule p { color: #2b3038; }
+.seismic .rule ul { color: #4c525c; }
+
+/* Quiz: inspection form */
+.seismic .quiz.passport { background: repeating-linear-gradient(0deg, transparent 0 35px, #14161a0f 35px 36px), #fff; border: 2px solid var(--ink); border-radius: 2px; box-shadow: 5px 5px 0 #14161a1f; }
+.seismic .quiz .q { border-bottom: 1px solid #14161a1a; }
+.seismic .quiz select { background: #fdfcf7; border: 2px solid #14161a40; border-radius: 4px; font-family: var(--mono); color: var(--ink); }
+.seismic .quiz select:focus-visible { outline: 2px solid var(--coral-ink); outline-offset: 1px; }
+.seismic .q.ok .stamp { color: var(--ok); border-color: var(--ok); }
+.seismic .q.bad .stamp { color: var(--bad); border-color: var(--bad); }
+.seismic .score { font-family: var(--display); }
+
+/* Questions and phrases */
+.seismic .bubble { background: #fff; border: 2px solid #14161a33; border-left: 6px solid var(--hazard); border-radius: 2px; box-shadow: 3px 3px 0 #14161a17; }
+.seismic .bubble b { background: #14161a; color: var(--hazard); border-radius: 4px; font-family: var(--mono); }
+.seismic .followups em { background: #f5c51844; color: #14161a; border: 1px solid #14161a40; border-radius: 2px; font-family: var(--mono); font-size: .82rem; }
+.seismic .phrase { background: linear-gradient(180deg, #343a44, #1b1f25); color: #f4f2ea; border: 2px solid #14161a; border-left: 8px solid var(--hazard); border-radius: 2px; box-shadow: 3px 3px 0 #14161a33; }
+.seismic .box { background: #fff; border: 2px solid var(--ink); border-left: 8px solid var(--sea); border-radius: 2px; box-shadow: 4px 4px 0 #14161a1f; }
+.seismic textarea { font-family: var(--mono); font-size: 1.02rem; background: repeating-linear-gradient(180deg, #fff 0 29px, #d9d5ca 29px 30px) 0 6px / 100% 30px local, #fff; border: 2px solid #14161a40; border-radius: 2px; }
+.seismic .task.checked span { color: var(--muted); }
+
+/* Reading: field bulletin */
+.seismic .reading {
+  background: #fbfaf5; border: 2px solid var(--ink); border-radius: 2px; border-left: 10px solid var(--alert);
+  box-shadow: 5px 5px 0 #14161a1f; padding: 22px 26px;
+}
+.seismic .reading h3 { font-family: var(--display); text-transform: uppercase; font-size: clamp(1.2rem, 2.6vw, 1.55rem); }
+.seismic .reading h3::after { content: "MAGNITUDE · INTENSITY · SAFETY"; display: block; font: 600 .68rem var(--mono); letter-spacing: .2em; color: var(--muted); margin-top: 6px; }
+.seismic .reading p { color: #23272d; }
+
+/* Teacher: timer and plan */
+.seismic .timer { background: linear-gradient(180deg, #2b3038f5, #14161af7); border: 2px solid #14161a; border-top: 6px solid var(--hazard); border-radius: 4px; box-shadow: 4px 4px 0 #0004; }
+.seismic .timer .clock { font-family: var(--mono); color: var(--hazard); }
+.seismic .timer .pname { font-family: var(--mono); color: #e9e6dc; }
+.seismic .timer .plane { color: var(--hazard); text-shadow: 0 0 8px #f5c51855; }
+.seismic .bar span.past { background: var(--sea); }
+.seismic .bar span.cur { background: var(--hazard); }
+.seismic .phase { background: #fff; border: 2px solid #14161a26; border-left: 8px solid var(--hazard); border-radius: 2px; box-shadow: 3px 3px 0 #14161a17; }
+.seismic .phase h3 { font-family: var(--body); font-weight: 700; }
+.seismic .phase h3 small { font-family: var(--mono); color: var(--coral-ink); }
+.seismic .phase.cur { border-left-color: var(--alert); box-shadow: 0 0 0 2px #d92b2b66, 3px 3px 0 #14161a17; }
+.seismic .phase.past { border-left-color: var(--sea); }
+.seismic .phase .stu { color: #4c525c; border-top: 1px solid #14161a1f; }
+
+/* Flashcards: field cards */
+.seismic .flash > .muted { color: #2b3038; }
+.seismic .card {
+  border-radius: 4px; border: 2px solid var(--ink); outline: none;
+  background: repeating-linear-gradient(0deg, transparent 0 39px, #14161a0d 39px 40px), #fff;
+  color: var(--ink); box-shadow: 8px 8px 0 #14161a1f, 0 18px 40px #0004; border-top: 12px solid var(--hazard);
+}
+.seismic .card::after { content: "FIELD CARD · SEISMIC"; font-family: var(--mono); color: var(--coral-ink); border-color: var(--coral-ink); border-radius: 2px; }
+.seismic .card .w { font-family: var(--display); text-transform: uppercase; }
+.seismic .card .m { color: #2b3038; }
+.seismic .card .e { font-family: var(--mono); color: #4c525c; }
+.seismic .fbtns .again { background: var(--bad); }
+.seismic .fbtns .good { background: var(--ok); }
+
+
+/* Case-study story: incident report with photographs */
+.seismic .reading.story { border-left-color: #14161a; }
+.seismic .reading.story h3::after { content: "CASE STUDY · LOMA PRIETA · 1989"; }
+.seismic .story-photo .pc-img { height: 180px; border: 2px solid var(--ink); border-left: 6px solid var(--hazard); }
+.seismic .story-photo figcaption { font-family: var(--mono); font-size: .76rem; color: var(--muted); }
+
+/* Motion: hazard tape drifts, alert pulse, cards land */
+@keyframes sq-drift { from { background-position: 0 0; } to { background-position: 0 48px; } }
+@keyframes sq-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+@keyframes sq-rise { from { translate: 0 18px; } to { translate: 0 0; } }
+@keyframes sq-stamp { 0% { scale: 1.6; } 70% { scale: .96; } 100% { scale: 1; } }
+@keyframes sq-tick { 0%, 100% { translate: 0 0; } 50% { translate: 3px 0; } }
+.seismic .ticket { animation: sq-rise .55s cubic-bezier(.2, .9, .3, 1.1) both; }
+.seismic .gate-no { animation: sq-stamp .5s cubic-bezier(.3, 1.4, .5, 1) both; animation-timeline: view(); animation-range: entry 5% entry 55%; }
+.seismic .postcard:hover .pc-img { animation: sq-tick .3s ease-in-out 2; }
+@media (prefers-reduced-motion: reduce) { .seismic * { animation: none !important; } }
+@media (max-width: 640px) {
+  .seismic .ticket-stub { border-top: 4px solid var(--hazard); }
+  .seismic .pc-img { height: 140px; }
+  .seismic .ticket-main { padding-left: 30px; }
+}

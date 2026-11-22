@@ -1,0 +1,307 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1484" width="1600" height="1484" font-family="Inter, -apple-system, Segoe UI, sans-serif">
+  <defs>
+    <style>
+      .bg{fill:#0f1117}
+      .panel{fill:#171a22;stroke:#2b3040;stroke-width:1.5;rx:10}
+      .h{fill:#f2f5ff;font-size:26px;font-weight:800;letter-spacing:-.01em}
+      .sec{fill:#7aa2ff;font-size:14px;font-weight:800;letter-spacing:.18em}
+      .lbl{fill:#e6ebf7;font-size:14px;font-weight:600}
+      .det{fill:#9aa6bf;font-size:12.5px}
+      .code{fill:#8fe3c0;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+      .box{fill:#1e2330;stroke:#333a4d;stroke-width:1.2;rx:7}
+      .boxHot{fill:#1c2a3d;stroke:#3f6ea8;stroke-width:1.4;rx:7}
+      .boxData{fill:#241f33;stroke:#4d3f75;stroke-width:1.4;rx:7}
+      .boxStore{fill:#1d2b26;stroke:#3a6b55;stroke-width:1.4;rx:7}
+      .arrow{stroke:#4c5a75;stroke-width:1.6;fill:none;marker-end:url(#a)}
+      .flow{stroke:#5a86c9;stroke-width:2;fill:none;marker-end:url(#ab)}
+      .tag{fill:#0f1117;font-size:11px;font-weight:700;letter-spacing:.06em}
+    </style>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#4c5a75"/>
+    </marker>
+    <marker id="ab" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M0 0 L10 5 L0 10 z" fill="#5a86c9"/>
+    </marker>
+  </defs>
+
+  <title>Wanderwords architecture</title>
+  <desc>Static site architecture: files, runtime, rendered pages, the lesson data contract split into an always-loaded index and lazy lesson bodies, course position, how to extend it, and the build checks.</desc>
+  <rect class="bg" width="1600" height="1484"/>
+  <text class="h" x="40" y="52">Wanderwords — architecture</text>
+  <text class="det" x="40" y="76">static site · no build step · 8 lessons · one lesson object drives four views · state in localStorage</text>
+  <text class="det" x="1560" y="52" text-anchor="end">2026-11-22</text>
+  <text class="det" x="1560" y="72" text-anchor="end">verified: 11 routes clean · 0 accessibility violations · no blur / no opacity-on-scroll</text>
+
+  <g font-size="11.5" font-weight="600">
+    <rect x="1090" y="88" width="12" height="12" fill="#241f33" stroke="#4d3f75"/><text class="det" x="1108" y="99">data contract</text>
+    <rect x="1204" y="88" width="12" height="12" fill="#1c2a3d" stroke="#3f6ea8"/><text class="det" x="1222" y="99">code path</text>
+    <rect x="1306" y="88" width="12" height="12" fill="#1d2b26" stroke="#3a6b55"/><text class="det" x="1324" y="99">state</text>
+    <rect x="1380" y="88" width="12" height="12" fill="#1e2330" stroke="#333a4d"/><text class="det" x="1398" y="99">static unit</text>
+  </g>
+  <!-- ============ 1. FILES ============ -->
+  <text class="sec" x="40" y="120">1 · FILES ON DISK</text>
+  <rect class="panel" x="40" y="132" width="360" height="306"/>
+  <rect class="box" x="56" y="148" width="328" height="34"/>
+  <text class="code" x="68" y="170">index.html</text>
+  <text class="det" x="196" y="170">shell · font links · theme CSS</text>
+
+  <rect class="boxHot" x="56" y="188" width="328" height="34"/>
+  <text class="code" x="68" y="210">data/index.js</text>
+  <text class="det" x="196" y="210">menu + word lists · always · 24 KB</text>
+
+  <rect class="boxHot" x="56" y="228" width="328" height="34"/>
+  <text class="code" x="68" y="250">data/lessons/lN.js</text>
+  <text class="det" x="196" y="250">one body · loaded on open</text>
+
+  <rect class="box" x="56" y="268" width="328" height="34"/>
+  <text class="code" x="68" y="290">app.js</text>
+  <text class="det" x="196" y="290">router · views · loader · storage</text>
+
+  <rect class="box" x="56" y="308" width="328" height="34"/>
+  <text class="code" x="68" y="330">style.css</text>
+  <text class="det" x="196" y="330">base + shared components (277 ln)</text>
+
+  <rect class="box" x="56" y="348" width="328" height="34"/>
+  <text class="code" x="68" y="370">themes/*.css</text>
+  <text class="det" x="196" y="370">one file per lesson look</text>
+
+  <rect class="box" x="56" y="388" width="104" height="34"/>
+  <text class="code" x="68" y="410">img/</text>
+  <rect class="box" x="168" y="388" width="104" height="34"/>
+  <text class="code" x="180" y="410">audio/</text>
+  <rect class="box" x="280" y="388" width="104" height="34"/>
+  <text class="code" x="292" y="410">tools/</text>
+
+  <!-- arrows files -> runtime -->
+  <path class="flow" d="M400 220 C440 220 440 250 470 250"/>
+  <path class="arrow" d="M400 300 C436 300 440 300 470 300"/>
+  <text class="det" x="404" y="238">index</text>
+
+  <!-- ============ 2. RUNTIME ============ -->
+  <text class="sec" x="470" y="120">2 · RUNTIME (app.js)</text>
+  <rect class="panel" x="470" y="132" width="470" height="238"/>
+
+  <rect class="boxHot" x="486" y="148" width="438" height="40"/>
+  <text class="lbl" x="498" y="166">route()</text>
+  <text class="det" x="560" y="166">hash → role + lesson n → body.theme + theme fonts</text>
+  <text class="det" x="498" y="181">#/  ·  #/student[/n]  ·  #/teacher[/n]  ·  #/cards</text>
+
+  <rect class="box" x="486" y="200" width="212" height="72"/>
+  <text class="lbl" x="498" y="220">Views</text>
+  <text class="det" x="498" y="238">renderList · renderStudentLesson</text>
+  <text class="det" x="498" y="254">renderTeacherLesson · renderAllCards</text>
+
+  <rect class="box" x="712" y="200" width="212" height="72"/>
+  <text class="lbl" x="724" y="220">Components</text>
+  <text class="det" x="724" y="238">gates · vocab · quiz · cards</text>
+  <text class="det" x="724" y="254">story · listen · photo viewer</text>
+
+  <rect class="boxStore" x="486" y="286" width="438" height="86"/>
+  <text class="lbl" x="498" y="306">store  (localStorage, prefix "travel:")</text>
+  <text class="det" x="498" y="324">done · ticks · quiz · cards (Leitner 0/1/2/4/8/16) · notes</text>
+  <text class="det" x="498" y="341">teacher flag in sessionStorage · every write wrapped (private mode safe)</text>
+  <text class="det" x="498" y="362">loader: data/lessons/lN.js on open · route token drops stale renders</text>
+
+  <path class="arrow" d="M700 188 L700 198"/>
+  <path class="arrow" d="M700 272 L700 284" stroke-dasharray="3 3"/>
+
+  <!-- ============ 3. OUTPUT + THEMES ============ -->
+  <text class="sec" x="980" y="120">3 · RENDERED PAGES</text>
+  <rect class="panel" x="980" y="132" width="580" height="238"/>
+
+  <rect class="box" x="996" y="148" width="272" height="96"/>
+  <text class="lbl" x="1008" y="168">Student lesson</text>
+  <text class="det" x="1008" y="186">ticket → 8–10 gates → check-in list</text>
+  <text class="det" x="1008" y="202">warm-up · read · listen · rules · words</text>
+  <text class="det" x="1008" y="218">drill · transform · quiz · speak · cards</text>
+  <text class="det" x="1008" y="234">challenge + homework</text>
+
+  <rect class="box" x="1284" y="148" width="260" height="96"/>
+  <text class="lbl" x="1296" y="168">Teacher lesson</text>
+  <text class="det" x="1296" y="186">timer · phase plan (sums to 50 min)</text>
+  <text class="det" x="1296" y="202">answer keys · listening script</text>
+  <text class="det" x="1296" y="218">flight log · "landed" tick</text>
+  <text class="det" x="1296" y="234">password-gated, not security</text>
+
+  <rect class="box" x="996" y="256" width="272" height="96"/>
+  <text class="lbl" x="1008" y="276">Lesson list</text>
+  <text class="det" x="1008" y="294">one boarding pass per lesson</text>
+  <text class="det" x="1008" y="310">level from → to · word count · 50 min</text>
+  <text class="det" x="1008" y="326">done stamp: data flag or teacher tick</text>
+
+  <rect class="box" x="1284" y="256" width="260" height="96"/>
+  <text class="lbl" x="1296" y="276">Cards (all words)</text>
+  <text class="det" x="1296" y="294">deck per lesson + all + due today</text>
+  <text class="det" x="1296" y="310">built from LESSONS, never hard-coded</text>
+  <text class="det" x="1296" y="326">9 decks now</text>
+
+  <text class="det" x="996" y="366">theme engine:  body.&lt;theme&gt;  →  themes/&lt;theme&gt;.css  +  THEME_FONTS[theme]</text>
+
+  <!-- ============ 4. DATA MODEL ============ -->
+  <text class="sec" x="40" y="480">4 · ONE LESSON OBJECT (data/lessons.js)</text>
+  <rect class="panel" x="40" y="492" width="1520" height="286"/>
+
+  <rect class="boxData" x="56" y="508" width="230" height="72"/>
+  <text class="lbl" x="68" y="528">identity</text>
+  <text class="det" x="68" y="546">n · title · icon · theme</text>
+  <text class="det" x="68" y="562">from → to · goal</text>
+
+  <rect class="boxData" x="298" y="508" width="230" height="72"/>
+  <text class="lbl" x="310" y="528">gates{}</text>
+  <text class="det" x="310" y="546">title + subtitle per stage</text>
+  <text class="det" x="310" y="562">warmup · reading · listen · story…</text>
+
+  <rect class="boxData" x="540" y="508" width="230" height="72"/>
+  <text class="lbl" x="552" y="528">warmup[]</text>
+  <text class="det" x="552" y="546">icon or img · caption · stamp</text>
+  <text class="det" x="552" y="562">credit (shown in viewer)</text>
+
+  <rect class="boxData" x="782" y="508" width="230" height="72"/>
+  <text class="lbl" x="794" y="528">reading{} · story{}</text>
+  <text class="det" x="794" y="546">paragraphs[] (+ story photos)</text>
+  <text class="det" x="794" y="562">long-form input</text>
+
+  <rect class="boxData" x="1024" y="508" width="250" height="72"/>
+  <text class="lbl" x="1036" y="528">listen{}</text>
+  <text class="det" x="1036" y="546">audio? · seconds · script[]</text>
+  <text class="det" x="1036" y="562">questions[] (transcript locked)</text>
+
+  <rect class="boxData" x="1286" y="508" width="258" height="72"/>
+  <text class="lbl" x="1298" y="528">rules[]</text>
+  <text class="det" x="1298" y="546">title · form · use · ex[]</text>
+  <text class="det" x="1298" y="562">language cards</text>
+
+  <rect class="boxData" x="56" y="592" width="230" height="72"/>
+  <text class="lbl" x="68" y="612">groups[]</text>
+  <text class="det" x="68" y="630">name + words[ [w, meaning, ex] ]</text>
+  <text class="det" x="68" y="646">feeds words + flashcards + quiz</text>
+
+  <rect class="boxData" x="298" y="592" width="230" height="72"/>
+  <text class="lbl" x="310" y="612">drill[]</text>
+  <text class="det" x="310" y="630">[sentence, options[], answer]</text>
+  <text class="det" x="310" y="646">gap-fill</text>
+
+  <rect class="boxData" x="540" y="592" width="230" height="72"/>
+  <text class="lbl" x="552" y="612">transform[]</text>
+  <text class="det" x="552" y="630">[prompt, options[], answer]</text>
+  <text class="det" x="552" y="646">C1 key-word rewriting</text>
+
+  <rect class="boxData" x="782" y="592" width="230" height="72"/>
+  <text class="lbl" x="794" y="612">questions[]</text>
+  <text class="det" x="794" y="630">name + qs[]</text>
+  <text class="det" x="794" y="646">speaking prompts</text>
+
+  <rect class="boxData" x="1024" y="592" width="250" height="72"/>
+  <text class="lbl" x="1036" y="612">phrases[] · followups[]</text>
+  <text class="det" x="1036" y="630">useful language bank</text>
+  <text class="det" x="1036" y="646">shown on student page</text>
+
+  <rect class="boxData" x="1286" y="592" width="258" height="72"/>
+  <text class="lbl" x="1298" y="612">phases[]</text>
+  <text class="det" x="1298" y="630">P(min, name, teacher[], student[])</text>
+  <text class="det" x="1298" y="646">must total 50 minutes</text>
+
+  <rect class="boxData" x="56" y="676" width="740" height="86"/>
+  <text class="lbl" x="68" y="696">challenge · homework</text>
+  <text class="det" x="68" y="714">printed on student page; homework is the only take-away task</text>
+  <text class="det" x="68" y="730">labels{ cards, phrases } renames the two page sections per lesson</text>
+  <text class="det" x="68" y="746">done: true marks a lesson landed before the device ever ticks it</text>
+
+  <rect class="boxStore" x="812" y="676" width="732" height="86"/>
+  <text class="lbl" x="824" y="696">what the object does NOT hold</text>
+  <text class="det" x="824" y="714">no progress, no scores, no notes — those are per-device in localStorage</text>
+  <text class="det" x="824" y="730">no HTML: every view is a pure function of this object + the route</text>
+  <text class="det" x="824" y="746">so content edits never touch rendering code</text>
+
+  <!-- ============ 5. COURSE ============ -->
+  <text class="sec" x="40" y="818">5 · COURSE POSITION</text>
+  <rect class="panel" x="40" y="830" width="1520" height="292"/>
+
+  <text class="det" x="56" y="856">level arc — bars show new words per lesson; the label is the grammar/function target</text>
+
+  <!-- bars -->
+  <g font-size="12">
+    <rect class="box" x="56" y="870" width="176" height="120"/>
+    <text class="lbl" x="68" y="892">L1</text><text class="det" x="68" y="910">B1→B2</text>
+    <text class="det" x="68" y="928">travel vocab</text><text class="det" x="68" y="946">15 words</text>
+    <rect x="68" y="958" width="120" height="8" fill="#3b5b8f"/><rect x="68" y="958" width="82" height="8" fill="#7aa2ff"/>
+
+    <rect class="box" x="240" y="870" width="176" height="120"/>
+    <text class="lbl" x="252" y="892">L2</text><text class="det" x="252" y="910">B1→B2</text>
+    <text class="det" x="252" y="928">perfect vs past</text><text class="det" x="252" y="946">16 words</text>
+    <rect x="252" y="958" width="120" height="8" fill="#3b5b8f"/><rect x="252" y="958" width="87" height="8" fill="#7aa2ff"/>
+
+    <rect class="box" x="424" y="870" width="176" height="120"/>
+    <text class="lbl" x="436" y="892">L3</text><text class="det" x="436" y="910">B1→B2</text>
+    <text class="det" x="436" y="928">memory language</text><text class="det" x="436" y="946">14 words</text>
+    <rect x="436" y="958" width="120" height="8" fill="#3b5b8f"/><rect x="436" y="958" width="76" height="8" fill="#7aa2ff"/>
+
+    <rect class="box" x="608" y="870" width="176" height="120"/>
+    <text class="lbl" x="620" y="892">L4</text><text class="det" x="620" y="910">B2→B2+</text>
+    <text class="det" x="620" y="928">opinion + reason</text><text class="det" x="620" y="946">16 words</text>
+    <rect x="620" y="958" width="120" height="8" fill="#2f6b63"/><rect x="620" y="958" width="87" height="8" fill="#4ec3a8"/>
+
+    <rect class="box" x="792" y="870" width="176" height="120"/>
+    <text class="lbl" x="804" y="892">L5</text><text class="det" x="804" y="910">B2→C1</text>
+    <text class="det" x="804" y="928">hedging · word form</text><text class="det" x="804" y="946">22 words · too hard</text>
+    <rect x="804" y="958" width="120" height="8" fill="#6b3d5f"/><rect x="804" y="958" width="120" height="8" fill="#d98ac0"/>
+
+    <rect class="box" x="976" y="870" width="176" height="120"/>
+    <text class="lbl" x="988" y="892">L6</text><text class="det" x="988" y="910">B2→C1</text>
+    <text class="det" x="988" y="928">narrative · passive</text><text class="det" x="988" y="946">18 words · 6 rewrites</text>
+    <rect x="988" y="958" width="120" height="8" fill="#6b3d5f"/><rect x="988" y="958" width="98" height="8" fill="#d98ac0"/>
+
+    <rect class="box" x="1160" y="870" width="176" height="120"/>
+    <text class="lbl" x="1172" y="892">L7</text><text class="det" x="1172" y="910">B2→C1</text>
+    <text class="det" x="1172" y="928">inversion · conditionals</text><text class="det" x="1172" y="946">18 words · 6 rewrites</text>
+    <rect x="1172" y="958" width="120" height="8" fill="#6b3d5f"/><rect x="1172" y="958" width="98" height="8" fill="#d98ac0"/>
+
+    <rect class="boxHot" x="1344" y="870" width="200" height="120"/>
+    <text class="lbl" x="1356" y="892">L8 — now</text><text class="det" x="1356" y="910">B2→C1</text>
+    <text class="det" x="1356" y="928">process · chronology</text><text class="det" x="1356" y="946">18 words · listening</text>
+    <rect x="1356" y="958" width="120" height="8" fill="#2c4f7c"/><rect x="1356" y="958" width="98" height="8" fill="#6ea8ff"/>
+  </g>
+
+  <text class="det" x="56" y="1020">fixed this cycle:  L2/L3 duplicate vehicle closed (history)  ·  L5 C1 mechanics now recur via transform[]  ·  L7 grammar raised from B1 to C1  ·  L8 adds the first listening gate</text>
+  <text class="det" x="56" y="1044">still open:  your teacher's recording for L8 (script in audio/SCRIPTS.md)  ·  L9 should break the 18-word / 12-gap / 6-rewrite template  ·  progress has no course-level screen yet</text>
+  <text class="det" x="56" y="1068">delivery:  GitHub Pages (public, noindex) from repo root  ·  local preview: python3 serve.py 8788  ·  photos: public-domain / CC0, 3 credited press shots in L8</text>
+
+
+  <!-- ============ 6. EXTENDING ============ -->
+  <text class="sec" x="40" y="1156">6 · EXTENDING IT — what a change costs</text>
+  <rect class="panel" x="40" y="1168" width="1520" height="132"/>
+
+  <rect class="box" x="56" y="1184" width="486" height="100"/>
+  <text class="lbl" x="68" y="1206">Add a lesson</text>
+  <text class="det" x="68" y="1226">1 object in data/lessons.js · 1 theme file + 1 link + 1 font entry</text>
+  <text class="det" x="68" y="1244">0 changes to app.js — the views read the object, never the lesson number</text>
+  <text class="det" x="68" y="1262">risk: a typo in the object breaks one page silently — run validate-lessons.js</text>
+
+  <rect class="box" x="556" y="1184" width="476" height="100"/>
+  <text class="lbl" x="568" y="1206">Add a task type (like transform or listen)</text>
+  <text class="det" x="568" y="1226">1 render function + 1 gate entry in renderStudentLesson</text>
+  <text class="det" x="568" y="1244">optionally 1 teacher answer-key block</text>
+  <text class="det" x="568" y="1262">~15 lines; the last two (transform, listen) took one edit each</text>
+
+  <rect class="box" x="1046" y="1184" width="498" height="100"/>
+  <text class="lbl" x="1058" y="1206">Add a theme</text>
+  <text class="det" x="1058" y="1226">1 file themes/&lt;name&gt;.css + 1 link in index.html + THEME_FONTS entry</text>
+  <text class="det" x="1058" y="1244">theme cannot affect another lesson: every rule is scoped to body.&lt;name&gt;</text>
+  <text class="det" x="1058" y="1262">fonts load on demand, so a new theme costs nothing on other pages</text>
+
+  <!-- ============ 7. BUILD CHECKS + LIMITS ============ -->
+  <text class="sec" x="40" y="1336">7 · BUILD CHECKS AND KNOWN LIMITS</text>
+  <rect class="panel" x="40" y="1348" width="740" height="96"/>
+  <rect class="boxStore" x="56" y="1360" width="708" height="72"/>
+  <text class="lbl" x="68" y="1380">checks that must pass before a push</text>
+  <text class="det" x="68" y="1398">validate-lessons.js — 50 minutes, answer in options, files exist, no duplicate words</text>
+  <text class="det" x="68" y="1414">0 accessibility violations on every lesson at 390 px · 0 console errors on all routes · fast-scroll clean</text>
+
+  <rect class="panel" x="820" y="1348" width="740" height="96"/>
+  <rect class="boxData" x="836" y="1360" width="708" height="72"/>
+  <text class="lbl" x="848" y="1380">limits, stated honestly</text>
+  <text class="det" x="848" y="1398">one app.js (~500 lines) and one lessons.js (~1100 lines) · no automated tests · state is per device</text>
+  <text class="det" x="848" y="1414">teacher password is cosmetic · no course-level progress screen yet</text>
+
+  <text class="det" x="56" y="1476" fill="#6f7a92">rule of the build: content is data · rendering is pure · each lesson owns one theme file · every animation finite · nothing scroll-fades</text>
+</svg>
